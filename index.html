@@ -8,6 +8,7 @@
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Manrope:wght@300;400;600;800&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
@@ -74,6 +75,13 @@
         @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         .animate-enter { animation: slideUp 0.6s var(--ease-snap) forwards; }
         
+        @keyframes pulseHighlight {
+            0% { box-shadow: 0 0 0 0 rgba(204, 255, 0, 0.7); border-color: var(--accent-acid); }
+            70% { box-shadow: 0 0 0 20px rgba(204, 255, 0, 0); border-color: var(--accent-acid); }
+            100% { box-shadow: 0 0 0 0 rgba(204, 255, 0, 0); border-color: var(--border-dim); }
+        }
+        .highlight-card { animation: pulseHighlight 2s ease-out; border: 1px solid var(--accent-acid) !important; z-index: 50; scroll-margin-top: 140px; }
+
         /* HEADER */
         .cyber-header {
             position: sticky; top: 0; z-index: 100;
@@ -121,7 +129,8 @@
         .detail-label { color: var(--text-secondary); }
         .detail-val { font-family: var(--font-mono); text-align: right; }
         .detail-link { color: var(--accent-cyan); text-decoration: none; border-bottom: 1px dashed var(--accent-cyan); cursor: pointer; }
-        
+        .detail-link:hover { color: white; border-color: white; }
+
         /* LAYER 1: TOP PICKS GRID */
         .top-picks-grid {
             display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px;
@@ -137,20 +146,26 @@
             font-size: 0.7rem; padding: 4px 8px; position: absolute; top: -12px; left: 24px;
         }
 
-        /* LAYER 2: USE CASE NAV CARDS */
+        /* LAYER 2: USE CASE NAV CARDS (3x3 GRID) */
         .decision-grid {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 20px; margin-top: 40px;
+            display: grid; 
+            grid-template-columns: repeat(3, 1fr); /* FORCED 3 COLUMNS */
+            gap: 20px; 
+            margin-top: 40px;
         }
+        @media (max-width: 900px) {
+            .decision-grid { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+        }
+
         .use-case-card {
             background: var(--bg-panel); border: 1px solid var(--border-dim); padding: 24px;
             position: relative; overflow: hidden; transition: 0.3s; cursor: pointer;
-            border-left: 2px solid var(--border-bright);
+            border-left: 2px solid var(--border-bright); display: flex; flex-direction: column;
         }
         .use-case-card:hover { border-color: var(--accent-acid); transform: translateY(-4px); background: var(--bg-surface); }
         .use-case-icon { font-size: 2rem; margin-bottom: 16px; color: var(--text-tertiary); }
         .use-case-rec { 
-            margin-top: 16px; padding-top: 16px; border-top: 1px dashed var(--border-dim);
+            margin-top: auto; padding-top: 16px; border-top: 1px dashed var(--border-dim);
             display: flex; justify-content: space-between; align-items: center;
         }
         .arrow-icon { color: var(--accent-acid); opacity: 0; transition: 0.2s; transform: translateX(-10px); }
@@ -172,20 +187,88 @@
         }
         .filter-checkbox.checked { background: var(--accent-acid); border-color: var(--accent-acid); }
 
-        /* HERO */
+        /* HERO & SEARCH */
         .hero-glitch {
-            text-align: center; padding: 80px 24px;
+            text-align: center; padding: 80px 24px 40px;
             border-bottom: 1px solid var(--border-dim);
             background: radial-gradient(circle at center, rgba(204,255,0,0.05) 0%, transparent 70%);
         }
+        .hero-search-container {
+            max-width: 600px; margin: 30px auto 0; position: relative;
+        }
+        .hero-search-input {
+            width: 100%; padding: 16px 20px; 
+            background: var(--bg-panel); border: 1px solid var(--accent-acid); 
+            color: white; font-family: var(--font-mono); font-size: 1rem;
+            border-radius: 2px; box-shadow: 0 0 20px rgba(204,255,0,0.1);
+        }
+        .hero-search-icon {
+            position: absolute; right: 20px; top: 50%; transform: translateY(-50%);
+            color: var(--accent-acid); font-size: 1.2rem;
+        }
 
-        /* SPEED CHARTS */
-        .speed-row { display: flex; alignItems: center; margin-bottom: 12px; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        /* SPEED CHART STYLES (Cyber Style) */
+        .speed-row {
+            display: flex; align-items: center; margin-bottom: 12px;
+            padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
         .speed-label { width: 140px; font-family: var(--font-mono); font-size: 0.85rem; flex-shrink: 0; }
         .speed-track { flex-grow: 1; background: var(--bg-surface); height: 28px; position: relative; margin: 0 16px; border-radius: 2px; }
-        .speed-bar-dl { height: 100%; background: var(--accent-acid); position: absolute; top: 0; left: 0; color: black; font-weight: bold; font-size: 0.75rem; display: flex; align-items: center; justify-content: flex-end; padding-right: 8px; font-family: var(--font-mono); transition: width 1s ease-out; }
-        .speed-bar-ul { height: 4px; background: var(--accent-cyan); position: absolute; bottom: -6px; left: 0; transition: width 1s ease-out 0.2s; }
+        .speed-bar-dl {
+            height: 100%; background: var(--accent-acid);
+            background-image: repeating-linear-gradient(45deg, transparent, transparent 4px, rgba(0,0,0,0.3) 4px, rgba(0,0,0,0.3) 8px);
+            position: absolute; top: 0; left: 0; display: flex; align-items: center; justify-content: flex-end; padding-right: 8px;
+            color: black; font-weight: bold; font-size: 0.75rem; font-family: var(--font-mono);
+            transition: width 1s ease-out;
+        }
+        .speed-bar-ul {
+            height: 4px; background: var(--accent-cyan); position: absolute; bottom: -6px; left: 0;
+            transition: width 1s ease-out 0.2s;
+        }
         .speed-meta { width: 100px; text-align: right; font-size: 0.75rem; color: var(--text-secondary); flex-shrink: 0; }
+        .speed-legend { display: flex; gap: 20px; justify-content: flex-end; margin-bottom: 20px; font-family: var(--font-mono); font-size: 0.7rem; }
+        .legend-item { display: flex; align-items: center; gap: 6px; }
+        .legend-color { width: 12px; height: 12px; border-radius: 2px; }
+
+        /* FLOATING COMPARE BUTTON */
+        .compare-fab {
+            position: fixed; bottom: 30px; right: 30px; z-index: 200;
+            background: var(--accent-acid); color: black;
+            padding: 16px 32px; border-radius: 2px; font-weight: bold; font-family: var(--font-display);
+            box-shadow: 0 0 20px rgba(204,255,0,0.3); border: none; cursor: pointer;
+            transition: transform 0.2s; clip-path: polygon(10% 0, 100% 0, 100% 100%, 0% 100%, 0% 20%);
+        }
+        .compare-fab:hover { transform: scale(1.05); }
+
+        /* COMPARISON TABLE VIEW */
+        .compare-container {
+            overflow-x: auto; padding: 40px 24px; max-width: 100vw;
+        }
+        .compare-grid {
+            display: grid; gap: 24px; min-width: 100%;
+        }
+        .compare-col {
+            background: var(--bg-panel); border: 1px solid var(--border-dim);
+            border-top: 3px solid var(--accent-acid);
+        }
+        .compare-cell {
+            padding: 16px; border-bottom: 1px solid var(--border-dim);
+            font-size: 0.85rem; display: flex; justify-content: space-between;
+        }
+        .compare-header {
+            background: var(--bg-surface); padding: 24px; text-align: center;
+        }
+
+        /* METHODOLOGY MODAL */
+        .modal-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 1000;
+            display: flex; align-items: center; justify-content: center; backdrop-filter: blur(5px);
+        }
+        .modal {
+            background: var(--bg-panel); border: 1px solid var(--border-dim); padding: 40px;
+            max-width: 600px; width: 90%; max-height: 80vh; overflow-y: auto;
+            border-left: 4px solid var(--accent-acid);
+        }
 
         /* BUTTONS & BADGES */
         .btn { border: none; cursor: pointer; font-family: var(--font-mono); font-weight: 600; padding: 10px 16px; border-radius: 2px; text-decoration: none; display: inline-block; }
@@ -206,7 +289,7 @@
     <script type="text/babel">
         const { useState, useEffect, useRef, useMemo } = React;
 
-        // --- COMPLETE 26 DATASET (WITH REAL LINKS) ---
+        // --- COMPLETE 26 DATASET ---
         const ALL_VPN_DATA = [
             { 
                 name: "NordVPN", rank: 1, overallScore: 9.8, bestFor: "Overall Excellence", 
@@ -278,7 +361,7 @@
                 platforms: ["Win", "Mac", "iOS", "And", "Lin"], 
                 streamingServices: { netflix: false, hulu: false, bbc: false, disney: false }, 
                 paymentMethods: ["Cash", "Crypto", "Voucher", "Card"], 
-                useCases: ["privacy", "linux"],
+                useCases: ["privacy", "linux", "crypto"],
                 recentUpdate: "DAITA Defense",
                 scoreBreakdown: { privacy: "25/25", speed: "19/20", features: "10/15", support: "7/10", price: "9/10" },
                 pitch: "The gold standard for anonymity. No email required."
@@ -298,43 +381,17 @@
                 scoreBreakdown: { privacy: "22/25", speed: "17/20", features: "15/15", support: "8/10", price: "9/10" },
                 pitch: "Massive US server network ideal for torrenting."
             },
-            { 
-                name: "CyberGhost", rank: 7, overallScore: 8.7, bestFor: "Streaming", 
-                url: "https://cyberghostvpn.com", auditLink: "https://www.cyberghostvpn.com/privacyhub/privacy-audit/",
-                price: { monthly: "€12.99", annual: "€6.99", twoYear: "€2.03" }, devices: 7, servers: "11500+", countries: "100", noLogs: "Verified", jurisdiction: "Romania", 
-                streaming: "Excellent", speeds: { download: 420, upload: 84, loss: 16, latency: 33 }, 
-                features: { killSwitch: true, splitTunnel: true, adBlock: true, portForward: false }, 
-                protocols: ["WireGuard", "OpenVPN"], encryption: "AES-256", audit: "Deloitte '24", moneyBack: "45 days", support: 9, 
-                platforms: ["Win", "Mac", "iOS", "And", "Lin", "TV"], 
-                streamingServices: { netflix: true, hulu: true, bbc: true, disney: true }, 
-                paymentMethods: ["Card", "PayPal", "Bitcoin"], 
-                useCases: ["streaming", "gaming"],
-                recentUpdate: "Audit Sep '25",
-                pitch: "Dedicated streaming servers for optimized Netflix access."
-            },
-            { 
-                name: "Windscribe", rank: 8, overallScore: 8.5, bestFor: "Free/Flexible", 
-                url: "https://windscribe.com", auditLink: "https://windscribe.com/knowledge-base/articles/has-windscribe-been-audited/",
-                price: { monthly: "$9.00", annual: "$5.75", twoYear: "$5.75" }, devices: "Unlimited", servers: "480", countries: "69", noLogs: "Claimed", jurisdiction: "Canada", 
-                streaming: "Good", speeds: { download: 350, upload: 70, loss: 30, latency: 45 }, 
-                features: { killSwitch: true, splitTunnel: true, adBlock: true, portForward: true }, 
-                protocols: ["WireGuard", "OpenVPN"], encryption: "AES-256", audit: "Packetlabs '24", moneyBack: "3 days", support: 6, 
-                platforms: ["Win", "Mac", "iOS", "And", "Lin"], 
-                streamingServices: { netflix: true, hulu: true, bbc: true, disney: true }, 
-                paymentMethods: ["Card", "Crypto", "PayPal"], 
-                useCases: ["free", "torrenting"],
-                recentUpdate: "FreshScribe Audit '24",
-                pitch: "Generous free tier and unique 'build-a-plan' flexibility."
-            },
+            { name: "CyberGhost", rank: 7, overallScore: 8.7, bestFor: "Streaming", url: "https://cyberghostvpn.com", auditLink: "https://www.cyberghostvpn.com/privacyhub/privacy-audit/", price: { monthly: "€12.99", annual: "€6.99", twoYear: "€2.03" }, devices: 7, servers: "11500+", countries: "100", noLogs: "Verified", jurisdiction: "Romania", streaming: "Excellent", speeds: { download: 420, upload: 84, loss: 16, latency: 33 }, features: { killSwitch: true, splitTunnel: true, adBlock: true, portForward: false }, protocols: ["WireGuard", "OpenVPN"], encryption: "AES-256", audit: "Deloitte '24", moneyBack: "45 days", support: 9, platforms: ["Win", "Mac", "iOS", "And", "Lin", "TV"], streamingServices: { netflix: true, hulu: true, bbc: true, disney: true }, paymentMethods: ["Card", "PayPal", "Bitcoin"], useCases: ["streaming", "gaming"], recentUpdate: "Audit Sep '25", pitch: "Dedicated streaming servers for optimized Netflix access." },
+            { name: "Windscribe", rank: 8, overallScore: 8.5, bestFor: "Free/Flexible", url: "https://windscribe.com", auditLink: "https://windscribe.com/knowledge-base/articles/has-windscribe-been-audited/", price: { monthly: "$9.00", annual: "$5.75", twoYear: "$5.75" }, devices: "Unlimited", servers: "480", countries: "69", noLogs: "Claimed", jurisdiction: "Canada", streaming: "Good", speeds: { download: 350, upload: 70, loss: 30, latency: 45 }, features: { killSwitch: true, splitTunnel: true, adBlock: true, portForward: true }, protocols: ["WireGuard", "OpenVPN"], encryption: "AES-256", audit: "Packetlabs '24", moneyBack: "3 days", support: 6, platforms: ["Win", "Mac", "iOS", "And", "Lin"], streamingServices: { netflix: true, hulu: true, bbc: true, disney: true }, paymentMethods: ["Card", "Crypto", "PayPal"], useCases: ["free", "torrenting"], recentUpdate: "FreshScribe Audit '24", pitch: "Generous free tier and unique 'build-a-plan' flexibility." },
             { name: "IVPN", rank: 9, overallScore: 8.3, bestFor: "Transparency", url: "https://ivpn.net", auditLink: "https://www.ivpn.net/blog/tags/audit/", price: { monthly: "$6.00", annual: "$5.00", twoYear: "$5.00" }, devices: 7, servers: "77", countries: "32", noLogs: "Verified", jurisdiction: "Gibraltar", streaming: "Poor", speeds: { download: 390, upload: 80, loss: 12, latency: 29 }, features: { killSwitch: true, splitTunnel: true, adBlock: true, portForward: true }, protocols: ["WireGuard", "OpenVPN"], encryption: "ChaCha20", audit: "Cure53 '25", moneyBack: "30 days", support: 8, platforms: ["Win", "Mac", "iOS", "And", "Lin"], streamingServices: { netflix: false, hulu: false, bbc: false, disney: false }, paymentMethods: ["Card", "Cash", "Monero"], useCases: ["privacy", "linux"], recentUpdate: "Annual Audit May '25", pitch: "Ethical, transparent VPN with no trackers or logs." },
             { name: "Hide.me", rank: 10, overallScore: 8.1, bestFor: "Free Tier", url: "https://hide.me", auditLink: "https://hide.me/en/blog/security-audit-securitum/", price: { monthly: "$9.95", annual: "$4.99", twoYear: "$2.59" }, devices: 10, servers: "2600", countries: "90", noLogs: "Verified", jurisdiction: "Malaysia", streaming: "Good", speeds: { download: 385, upload: 75, loss: 20, latency: 34 }, features: { killSwitch: true, splitTunnel: true, adBlock: false, portForward: false }, protocols: ["WireGuard", "OpenVPN"], encryption: "AES-256", audit: "Securitum", moneyBack: "30 days", support: 8, platforms: ["Win", "Mac", "iOS", "And", "Lin"], streamingServices: { netflix: true, hulu: false, bbc: true, disney: true }, paymentMethods: ["Card", "Crypto", "PayPal"], useCases: ["free", "streaming"], recentUpdate: null, pitch: "Reliable free plan with decent speeds and security." },
             { name: "IPVanish", rank: 11, overallScore: 8.0, bestFor: "Unlimited Dev", url: "https://ipvanish.com", auditLink: "https://www.ipvanish.com/trust/", price: { monthly: "$12.99", annual: "$3.33", twoYear: "$2.19" }, devices: "Unlimited", servers: "2400+", countries: "90", noLogs: "Verified", jurisdiction: "USA", streaming: "Good", speeds: { download: 415, upload: 80, loss: 15, latency: 30 }, features: { killSwitch: true, splitTunnel: true, adBlock: false, portForward: false }, protocols: ["WireGuard", "OpenVPN"], encryption: "AES-256", audit: "Leviathan", moneyBack: "30 days", support: 8, platforms: ["Win", "Mac", "iOS", "And", "Lin", "TV"], streamingServices: { netflix: true, hulu: true, bbc: true, disney: false }, paymentMethods: ["Card", "PayPal", "Google"], useCases: ["family", "gaming"], recentUpdate: "Audit April '25", pitch: "Connect every device in your home without limits." },
             { name: "PrivadoVPN", rank: 12, overallScore: 7.9, bestFor: "Budget Streaming", url: "https://privadovpn.com", auditLink: "https://privadovpn.com/blog/privadovpn-no-logs-policy/", price: { monthly: "$10.99", annual: "$2.50", twoYear: "$1.99" }, devices: 10, servers: "800+", countries: "49", noLogs: "Claimed", jurisdiction: "Switzerland", streaming: "Good", speeds: { download: 340, upload: 60, loss: 25, latency: 40 }, features: { killSwitch: true, splitTunnel: false, adBlock: true, portForward: false }, protocols: ["WireGuard", "OpenVPN"], encryption: "AES-256", audit: "None", moneyBack: "30 days", support: 7, platforms: ["Win", "Mac", "iOS", "And"], streamingServices: { netflix: true, hulu: true, bbc: true, disney: true }, paymentMethods: ["Card", "PayPal"], useCases: ["budget", "streaming"], recentUpdate: null, pitch: "Cheap Swiss VPN that surprisingly unblocks Netflix." },
             { name: "PureVPN", rank: 13, overallScore: 7.8, bestFor: "Long Plans", url: "https://purevpn.com", auditLink: "https://www.purevpn.com/blog/purevpn-audit-kpmg/", price: { monthly: "$10.95", annual: "$3.74", twoYear: "$2.11" }, devices: 10, servers: "6000+", countries: "65", noLogs: "Verified", jurisdiction: "BVI", streaming: "Good", speeds: { download: 360, upload: 65, loss: 25, latency: 38 }, features: { killSwitch: true, splitTunnel: true, adBlock: false, portForward: true }, protocols: ["WireGuard", "OpenVPN"], encryption: "AES-256", audit: "KPMG", moneyBack: "31 days", support: 7, platforms: ["Win", "Mac", "iOS", "And", "Lin"], streamingServices: { netflix: true, hulu: true, bbc: true, disney: false }, paymentMethods: ["Card", "Crypto", "PayPal"], useCases: ["budget", "torrenting"], recentUpdate: "Transparency Report H1 '25", pitch: "Always-on audit structure ensures continuous privacy." },
-            { name: "AirVPN", rank: 14, overallScore: 7.7, bestFor: "Tech Users", url: "https://airvpn.org", auditLink: "https://airvpn.org/faq/", price: { monthly: "€7.00", annual: "€4.08", twoYear: "€3.29" }, devices: 5, servers: "250", countries: "23", noLogs: "Verified", jurisdiction: "Italy", streaming: "Average", speeds: { download: 340, upload: 65, loss: 22, latency: 38 }, features: { killSwitch: true, splitTunnel: true, adBlock: false, portForward: true }, protocols: ["OpenVPN", "WireGuard"], encryption: "AES-256", audit: "Internal", moneyBack: "30 days", support: 7, platforms: ["Win", "Mac", "Lin", "And"], streamingServices: { netflix: true, hulu: false, bbc: false, disney: false }, paymentMethods: ["Card", "Crypto", "PayPal"], useCases: ["linux", "torrenting"], recentUpdate: "WireGuard Speed Boost", pitch: "Built by activists for advanced users who need full control." },
+            { name: "AirVPN", rank: 14, overallScore: 7.7, bestFor: "Tech Users", url: "https://airvpn.org", auditLink: "https://airvpn.org/faq/", price: { monthly: "€7.00", annual: "€4.08", twoYear: "€3.29" }, devices: 5, servers: "250", countries: "23", noLogs: "Verified", jurisdiction: "Italy", streaming: "Average", speeds: { download: 340, upload: 65, loss: 22, latency: 38 }, features: { killSwitch: true, splitTunnel: true, adBlock: false, portForward: true }, protocols: ["OpenVPN", "WireGuard"], encryption: "AES-256", audit: "Internal", moneyBack: "30 days", support: 7, platforms: ["Win", "Mac", "Lin", "And"], streamingServices: { netflix: true, hulu: false, bbc: false, disney: false }, paymentMethods: ["Card", "Crypto", "PayPal"], useCases: ["linux", "torrenting", "crypto"], recentUpdate: "WireGuard Speed Boost", pitch: "Built by activists for advanced users who need full control." },
             { name: "VyprVPN", rank: 15, overallScore: 7.5, bestFor: "China/Censorship", url: "https://vyprvpn.com", auditLink: "https://www.vyprvpn.com/blog/no-log-vpn-audit", price: { monthly: "$10.00", annual: "$5.00", twoYear: "$3.00" }, devices: 10, servers: "700+", countries: "70", noLogs: "Verified", jurisdiction: "Switzerland", streaming: "Good", speeds: { download: 310, upload: 55, loss: 25, latency: 42 }, features: { killSwitch: true, splitTunnel: true, adBlock: false, portForward: false }, protocols: ["Chameleon", "WireGuard"], encryption: "AES-256", audit: "Leviathan", moneyBack: "30 days", support: 8, platforms: ["Win", "Mac", "iOS", "And"], streamingServices: { netflix: true, hulu: true, bbc: true, disney: true }, paymentMethods: ["Card", "PayPal"], useCases: ["travel", "privacy"], recentUpdate: null, pitch: "Chameleon protocol defeats strict censorship firewalls." },
             { name: "StrongVPN", rank: 16, overallScore: 7.4, bestFor: "Legacy Users", url: "https://strongvpn.com", auditLink: "https://strongvpn.com/privacy-policy/", price: { monthly: "$11.99", annual: "$3.97", twoYear: "$3.97" }, devices: 12, servers: "950", countries: "30", noLogs: "Claimed", jurisdiction: "USA", streaming: "Average", speeds: { download: 320, upload: 60, loss: 28, latency: 40 }, features: { killSwitch: true, splitTunnel: false, adBlock: false, portForward: false }, protocols: ["WireGuard", "OpenVPN"], encryption: "AES-256", audit: "None", moneyBack: "30 days", support: 7, platforms: ["Win", "Mac", "iOS", "And"], streamingServices: { netflix: true, hulu: true, bbc: false, disney: false }, paymentMethods: ["Card", "PayPal"], useCases: ["budget"], recentUpdate: null, pitch: "Simple, no-frills VPN that gets the basics right." },
-            { name: "Hotspot Shield", rank: 17, overallScore: 7.2, bestFor: "Speed (Hydra)", url: "https://hotspotshield.com", auditLink: "https://www.hotspotshield.com/privacy/", price: { monthly: "$12.99", annual: "$7.99", twoYear: "$7.99" }, devices: 10, servers: "1800", countries: "80", noLogs: "Claimed", jurisdiction: "USA", streaming: "Good", speeds: { download: 440, upload: 90, loss: 8, latency: 24 }, features: { killSwitch: true, splitTunnel: true, adBlock: false, portForward: false }, protocols: ["Hydra"], encryption: "AES-128", audit: "None", moneyBack: "45 days", support: 8, platforms: ["Win", "Mac", "iOS", "And"], streamingServices: { netflix: true, hulu: true, bbc: true, disney: true }, paymentMethods: ["Card", "PayPal"], useCases: ["gaming", "streaming"], recentUpdate: null, pitch: "Proprietary Hydra protocol delivers blazing fast speeds." },
+             { name: "Hotspot Shield", rank: 17, overallScore: 7.2, bestFor: "Speed (Hydra)", url: "https://hotspotshield.com", auditLink: "https://www.hotspotshield.com/privacy/", price: { monthly: "$12.99", annual: "$7.99", twoYear: "$7.99" }, devices: 10, servers: "1800", countries: "80", noLogs: "Claimed", jurisdiction: "USA", streaming: "Good", speeds: { download: 440, upload: 90, loss: 8, latency: 24 }, features: { killSwitch: true, splitTunnel: true, adBlock: false, portForward: false }, protocols: ["Hydra"], encryption: "AES-128", audit: "None", moneyBack: "45 days", support: 8, platforms: ["Win", "Mac", "iOS", "And"], streamingServices: { netflix: true, hulu: true, bbc: true, disney: true }, paymentMethods: ["Card", "PayPal"], useCases: ["gaming", "streaming"], recentUpdate: null, pitch: "Proprietary Hydra protocol delivers blazing fast speeds." },
             { name: "Bitdefender", rank: 18, overallScore: 7.0, bestFor: "Antivirus Bundle", url: "https://bitdefender.com", auditLink: "https://www.bitdefender.com/business/support/en/71263-80129-data-privacy-and-security.html", price: { monthly: "$6.99", annual: "$2.50", twoYear: "$2.50" }, devices: 10, servers: "4000", countries: "53", noLogs: "Claimed", jurisdiction: "Romania", streaming: "Average", speeds: { download: 420, upload: 85, loss: 10, latency: 26 }, features: { killSwitch: true, splitTunnel: true, adBlock: true, portForward: false }, protocols: ["Hydra"], encryption: "AES-256", audit: "PwC", moneyBack: "30 days", support: 7, platforms: ["Win", "Mac", "iOS", "And"], streamingServices: { netflix: true, hulu: false, bbc: false, disney: false }, paymentMethods: ["Card", "PayPal"], useCases: ["budget"], recentUpdate: null, pitch: "Great add-on for existing Bitdefender security users." },
             { name: "TunnelBear", rank: 19, overallScore: 6.8, bestFor: "Beginners", url: "https://tunnelbear.com", auditLink: "https://www.tunnelbear.com/blog/tunnelbear-completes-8th-annual-independent-security-audit/", price: { monthly: "$9.99", annual: "$3.33", twoYear: "$3.33" }, devices: "Unlimited", servers: "5000", countries: "47", noLogs: "Verified", jurisdiction: "Canada", streaming: "Poor", speeds: { download: 280, upload: 45, loss: 35, latency: 50 }, features: { killSwitch: true, splitTunnel: true, adBlock: false, portForward: false }, protocols: ["OpenVPN", "IKEv2"], encryption: "AES-256", audit: "Cure53 '25", moneyBack: "0 days", support: 7, platforms: ["Win", "Mac", "iOS", "And"], streamingServices: { netflix: false, hulu: false, bbc: false, disney: false }, paymentMethods: ["Card", "Bitcoin"], useCases: ["free", "travel"], recentUpdate: "8th Annual Audit", pitch: "The friendliest VPN interface, perfect for non-techies." },
             { name: "Mozilla VPN", rank: 20, overallScore: 6.5, bestFor: "Firefox Users", url: "https://mozilla.org/products/vpn", auditLink: "https://blog.mozilla.org/en/products/mozilla-vpn/mozilla-vpn-security-audit/", price: { monthly: "$9.99", annual: "$4.99", twoYear: "$4.99" }, devices: 5, servers: "500+", countries: "30", noLogs: "Claimed", jurisdiction: "USA", streaming: "Poor", speeds: { download: 400, upload: 80, loss: 15, latency: 32 }, features: { killSwitch: true, splitTunnel: true, adBlock: false, portForward: false }, protocols: ["WireGuard"], encryption: "ChaCha20", audit: "Cure53", moneyBack: "30 days", support: 6, platforms: ["Win", "Mac", "iOS", "And", "Lin"], streamingServices: { netflix: false, hulu: false, bbc: false, disney: false }, paymentMethods: ["Card", "PayPal"], useCases: ["privacy"], recentUpdate: "Audit 2023", pitch: "Trusted Mozilla privacy powered by Mullvad servers." },
@@ -342,7 +399,7 @@
             { name: "Avast", rank: 22, overallScore: 6.0, bestFor: "Avast Users", url: "https://www.avast.com/secureline-vpn", auditLink: "https://www.avast.com/en-us/privacy-policy", price: { monthly: "$4.99", annual: "$3.75", twoYear: "$3.75" }, devices: 10, servers: "700", countries: "34", noLogs: "Claimed", jurisdiction: "Czech", streaming: "Average", speeds: { download: 300, upload: 50, loss: 30, latency: 45 }, features: { killSwitch: true, splitTunnel: false, adBlock: false, portForward: false }, protocols: ["WireGuard"], encryption: "AES-256", audit: "None", moneyBack: "30 days", support: 6, platforms: ["Win", "Mac", "iOS", "And"], streamingServices: { netflix: true, hulu: false, bbc: false, disney: false }, paymentMethods: ["Card", "PayPal"], useCases: ["budget"], recentUpdate: null, pitch: "Simple, integrated VPN for the Avast ecosystem." },
             { name: "Kaspersky", rank: 23, overallScore: 5.9, bestFor: "Kaspersky Users", url: "https://www.kaspersky.com/vpn-secure-connection", auditLink: "https://www.kaspersky.com/about/transparency", price: { monthly: "$4.99", annual: "$2.50", twoYear: "$2.50" }, devices: 5, servers: "2000", countries: "35", noLogs: "Claimed", jurisdiction: "Russia/Switz", streaming: "Good", speeds: { download: 430, upload: 88, loss: 12, latency: 28 }, features: { killSwitch: true, splitTunnel: false, adBlock: false, portForward: false }, protocols: ["Hydra"], encryption: "AES-256", audit: "None", moneyBack: "30 days", support: 7, platforms: ["Win", "Mac", "iOS", "And"], streamingServices: { netflix: true, hulu: true, bbc: true, disney: false }, paymentMethods: ["Card", "PayPal"], useCases: ["gaming"], recentUpdate: null, pitch: "Fast connection speeds but jurisdiction concerns remain." },
             { name: "AdGuard VPN", rank: 24, overallScore: 5.5, bestFor: "AdBlocking", url: "https://adguard-vpn.com", auditLink: "https://adguard-vpn.com/en/privacy.html", price: { monthly: "$11.99", annual: "$3.99", twoYear: "$2.99" }, devices: 5, servers: "100", countries: "50", noLogs: "Claimed", jurisdiction: "Cyprus", streaming: "Poor", speeds: { download: 220, upload: 35, loss: 50, latency: 65 }, features: { killSwitch: true, splitTunnel: true, adBlock: true, portForward: false }, protocols: ["Proprietary"], encryption: "AES-256", audit: "None", moneyBack: "30 days", support: 7, platforms: ["Win", "Mac", "iOS", "And"], streamingServices: { netflix: false, hulu: false, bbc: false, disney: false }, paymentMethods: ["Card", "PayPal", "Crypto"], useCases: ["privacy"], recentUpdate: null, pitch: "Unique protocol focused heavily on ad and tracker blocking." },
-            { name: "Astrill", rank: 25, overallScore: 5.2, bestFor: "China Expat", url: "https://www.astrill.com", auditLink: "https://www.astrill.com/privacy-policy", price: { monthly: "$30.00", annual: "$15.00", twoYear: "$12.50" }, devices: 5, servers: "Unknown", countries: "57", noLogs: "Claimed", jurisdiction: "Seychelles", streaming: "Average", speeds: { download: 280, upload: 60, loss: 20, latency: 150 }, features: { killSwitch: true, splitTunnel: true, adBlock: true, portForward: true }, protocols: ["OpenWeb", "StealthVPN"], encryption: "AES-256", audit: "None", moneyBack: "0 days", support: 8, platforms: ["Win", "Mac", "iOS", "And", "Lin", "Router"], streamingServices: { netflix: true, hulu: false, bbc: false, disney: false }, paymentMethods: ["Card", "PayPal", "Bitcoin", "AliPay"], useCases: ["travel", "privacy"], recentUpdate: null, pitch: "Expensive but reliable for bypassing extreme censorship." },
+            { name: "Astrill", rank: 25, overallScore: 5.2, bestFor: "China Expat", url: "https://www.astrill.com", auditLink: "https://www.astrill.com/privacy-policy", price: { monthly: "$30.00", annual: "$15.00", twoYear: "$12.50" }, devices: 5, servers: "Unknown", countries: "57", noLogs: "Claimed", jurisdiction: "Seychelles", streaming: "Average", speeds: { download: 280, upload: 60, loss: 20, latency: 150 }, features: { killSwitch: true, splitTunnel: true, adBlock: true, portForward: true }, protocols: ["OpenWeb", "StealthVPN"], encryption: "AES-256", audit: "None", moneyBack: "0 days", support: 8, platforms: ["Win", "Mac", "iOS", "And", "Lin", "Router"], streamingServices: { netflix: true, hulu: false, bbc: false, disney: false }, paymentMethods: ["Card", "PayPal", "Bitcoin", "AliPay"], useCases: ["travel", "privacy", "business"], recentUpdate: null, pitch: "Expensive but reliable for bypassing extreme censorship." },
             { name: "Opera VPN", rank: 26, overallScore: 4.0, bestFor: "Basic Browser Proxy", url: "https://www.opera.com/features/free-vpn", auditLink: "https://www.opera.com/privacy", price: { monthly: "$0.00", annual: "$0.00", twoYear: "$0.00" }, devices: 1, servers: "Unknown", countries: "3", noLogs: "Claimed", jurisdiction: "Norway", streaming: "Poor", speeds: { download: 150, upload: 20, loss: 60, latency: 80 }, features: { killSwitch: false, splitTunnel: false, adBlock: true, portForward: false }, protocols: ["HTTPS"], encryption: "TLS 1.3", audit: "None", moneyBack: "N/A", support: 5, platforms: ["Browser"], streamingServices: { netflix: false, hulu: false, bbc: false, disney: false }, paymentMethods: ["Free"], useCases: ["free"], recentUpdate: null, pitch: "Not a true VPN, but a free in-browser proxy." }
         ];
 
@@ -354,7 +411,11 @@
             const [filters, setFilters] = useState({ audited: false, wireguard: false, cheap: false, streaming: false });
             const [favorites, setFavorites] = useState(() => JSON.parse(localStorage.getItem('vpn_compass_favs') || '[]'));
             const [theme, setTheme] = useState('dark');
+            const [highlighted, setHighlighted] = useState(null);
             const [showMethodology, setShowMethodology] = useState(false);
+            const [searchQuery, setSearchQuery] = useState('');
+
+            useEffect(() => { document.documentElement.setAttribute('data-theme', theme); }, [theme]);
 
             const toggleFav = (name) => {
                 const newFavs = favorites.includes(name) ? favorites.filter(n => n !== name) : [...favorites, name];
@@ -367,7 +428,14 @@
             // Handle Nav Click
             const handleNav = (tab) => {
                 setActiveTab(tab);
+                setSearchQuery(''); // Reset search when changing tabs
                 if(tab === 'dashboard') setActiveCategory('home');
+            };
+
+            const handleHeroSearch = (query) => {
+                setSearchQuery(query);
+                setActiveTab('grid');
+                setActiveCategory('all');
             };
 
             return (
@@ -377,7 +445,12 @@
                     
                     <main>
                         {activeTab === 'dashboard' && activeCategory === 'home' && (
-                            <HomeLayer onNavigate={(cat) => { setActiveCategory(cat); setActiveTab('grid'); }} vpns={ALL_VPN_DATA} />
+                            <HomeLayer 
+                                onNavigate={(cat) => { setActiveCategory(cat); setActiveTab('grid'); }} 
+                                vpns={ALL_VPN_DATA}
+                                onSearch={handleHeroSearch}
+                                onTopPickClick={(name) => { setActiveTab('grid'); setHighlighted(name); }}
+                            />
                         )}
                         
                         {(activeTab === 'grid' || activeCategory !== 'home') && (
@@ -389,6 +462,9 @@
                                 toggleFilter={toggleFilter}
                                 favorites={favorites}
                                 toggleFav={toggleFav}
+                                searchQuery={searchQuery}
+                                setSearchQuery={setSearchQuery}
+                                highlighted={highlighted}
                             />
                         )}
 
@@ -402,6 +478,8 @@
                                 toggleFilter={toggleFilter}
                                 favorites={favorites}
                                 toggleFav={toggleFav}
+                                searchQuery={searchQuery}
+                                setSearchQuery={setSearchQuery}
                             />
                         )}
                     </main>
@@ -436,18 +514,37 @@
         }
 
         // --- LAYER 1: HOMEPAGE ---
-        function HomeLayer({ onNavigate, vpns }) {
+        function HomeLayer({ onNavigate, vpns, onSearch, onTopPickClick }) {
+            const [localSearch, setLocalSearch] = useState('');
+
+            const handleSearchSubmit = (e) => {
+                e.preventDefault();
+                onSearch(localSearch);
+            };
+
             return (
                 <div className="animate-enter">
                     <section className="hero-glitch">
                         <span className="font-mono text-acid" style={{ fontSize: '0.8rem' }}>VPN DECISION GUIDE 2026</span>
                         <h1 className="font-display" style={{ fontSize: '3rem', margin: '20px 0 10px' }}>CHOOSE YOUR VPN</h1>
-                        <p style={{ maxWidth: '600px', margin: '0 auto 40px', color: 'var(--text-secondary)' }}>
+                        <p style={{ maxWidth: '600px', margin: '0 auto', color: 'var(--text-secondary)' }}>
                             Data-driven, bias-free analysis of 26 top providers.
                         </p>
                         
+                        {/* HERO SEARCH BAR */}
+                        <form onSubmit={handleSearchSubmit} className="hero-search-container">
+                            <input 
+                                type="text" 
+                                className="hero-search-input" 
+                                placeholder="Search by name (e.g. NordVPN, Mullvad)..."
+                                value={localSearch}
+                                onChange={(e) => setLocalSearch(e.target.value)}
+                            />
+                            <button type="submit" style={{background:'none', border:'none', cursor:'pointer'}} className="hero-search-icon">🔍</button>
+                        </form>
+                        
                         {/* TOP STRATEGIC PICKS (LAYER 1) */}
-                        <div style={{maxWidth: '1440px', margin: '0 auto', textAlign: 'left', padding: '0 24px'}}>
+                        <div style={{maxWidth: '1440px', margin: '60px auto 0', textAlign: 'left', padding: '0 24px'}}>
                             <h3 className="font-display" style={{marginBottom:'24px', borderLeft:'3px solid var(--accent-acid)', paddingLeft:'12px'}}>TOP STRATEGIC PICKS</h3>
                             <div className="top-picks-grid">
                                 {vpns.slice(0, 4).map((v, i) => (
@@ -460,7 +557,7 @@
                                             <li>🛡️ {v.audit}</li>
                                             <li>💰 {v.price.monthly}</li>
                                         </ul>
-                                        <button className="btn btn-outline" onClick={() => onNavigate('all')}>VIEW SPECS</button>
+                                        <button className="btn btn-outline" onClick={() => onTopPickClick(v.name)}>VIEW SPECS</button>
                                     </div>
                                 ))}
                             </div>
@@ -475,7 +572,10 @@
                                 <UseCaseCard icon="🏴‍☠️" title="Torrenting" desc="P2P, Port Forwarding" onClick={() => onNavigate('torrenting')} />
                                 <UseCaseCard icon="💸" title="Budget" desc="Best value under $3/mo" onClick={() => onNavigate('budget')} />
                                 <UseCaseCard icon="🎮" title="Gaming" desc="Low Ping & Anti-DDoS" onClick={() => onNavigate('gaming')} />
-                                <UseCaseCard icon="📖" title="All Providers" desc="Full list of 26 VPNs" onClick={() => onNavigate('all')} />
+                                <UseCaseCard icon="✈️" title="Travel" desc="China & Restrictive Regions" onClick={() => onNavigate('travel')} />
+                                <UseCaseCard icon="💼" title="Business" desc="Static IP & Team Accounts" onClick={() => onNavigate('business')} />
+                                <UseCaseCard icon="₿" title="Crypto" desc="Pay anonymously with Bitcoin/Monero" onClick={() => onNavigate('crypto')} />
+                                <UseCaseCard icon="📱" title="Mobile" desc="Best iOS & Android Apps" onClick={() => onNavigate('mobile')} />
                             </div>
                         </div>
                     </section>
@@ -498,17 +598,26 @@
         }
 
         // --- LAYER 2: USE CASE / GRID LAYER ---
-        function UseCaseLayer({ category, onBack, vpns, filters, toggleFilter, favorites, toggleFav }) {
+        function UseCaseLayer({ category, onBack, vpns, filters, toggleFilter, favorites, toggleFav, searchQuery, setSearchQuery, highlighted }) {
             // Logic to filter VPNs based on category & toggles
             const filtered = useMemo(() => {
                 let list = vpns;
                 
+                // Search Filter
+                if (searchQuery) {
+                    list = list.filter(v => v.name.toLowerCase().includes(searchQuery.toLowerCase()));
+                }
+
                 // Category Filter Logic
                 if (category === 'streaming') list = list.filter(v => v.streaming === 'Excellent');
                 if (category === 'privacy') list = list.filter(v => v.useCases.includes('privacy'));
                 if (category === 'budget') list = list.filter(v => parseFloat(v.price.twoYear.replace('$','').replace('€','')) < 3.00);
                 if (category === 'torrenting') list = list.filter(v => v.useCases.includes('torrenting'));
                 if (category === 'gaming') list = list.filter(v => v.useCases.includes('gaming'));
+                if (category === 'travel') list = list.filter(v => v.useCases.includes('travel'));
+                if (category === 'business') list = list.filter(v => v.useCases.includes('business') || v.features.portForward);
+                if (category === 'crypto') list = list.filter(v => v.paymentMethods.some(p => p.includes('Crypto') || p.includes('Bitcoin') || p.includes('Monero')));
+                if (category === 'mobile') list = list.filter(v => v.platforms.includes('iOS') && v.platforms.includes('And'));
 
                 // Bar Filters
                 if (filters.audited) list = list.filter(v => v.audit && v.audit !== "None");
@@ -517,7 +626,7 @@
                 if (filters.streaming) list = list.filter(v => v.streamingServices.netflix);
 
                 return list.sort((a,b) => b.overallScore - a.overallScore);
-            }, [category, filters, vpns]);
+            }, [category, filters, vpns, searchQuery]);
 
             return (
                 <div className="animate-enter">
@@ -539,17 +648,36 @@
                     </div>
 
                     <div style={{maxWidth:'1440px', margin:'40px auto', padding:'0 24px'}}>
-                        <h2 className="font-display" style={{fontSize:'2rem', marginBottom:'10px'}}>{category === 'all' ? 'ALL PROVIDERS' : category.toUpperCase() + ' INTELLIGENCE'}</h2>
-                        <p className="text-muted" style={{marginBottom:'40px'}}>
-                            {category === 'streaming' && "Optimized for unblocking Netflix, Hulu, and avoiding ISP throttling."}
-                            {category === 'privacy' && "Strict no-logs policies, offshore jurisdictions, and anonymous payment options."}
-                            {category === 'budget' && "Maximum security for minimum cost. Best deals verified January 2026."}
-                            {category === 'all' && "Full tactical database of 26 providers."}
-                        </p>
+                        <div style={{display:'flex', justifyContent:'space-between', alignItems:'flex-end', marginBottom:'20px'}}>
+                            <div>
+                                <h2 className="font-display" style={{fontSize:'2rem', marginBottom:'10px'}}>{category === 'all' ? 'ALL PROVIDERS' : category.toUpperCase() + ' INTELLIGENCE'}</h2>
+                                <p className="text-muted">
+                                    {category === 'streaming' && "Optimized for unblocking Netflix, Hulu, and avoiding ISP throttling."}
+                                    {category === 'privacy' && "Strict no-logs policies, offshore jurisdictions, and anonymous payment options."}
+                                    {category === 'budget' && "Maximum security for minimum cost. Best deals verified January 2026."}
+                                    {category === 'all' && "Full tactical database of 26 providers."}
+                                    {category === 'favorites' && "Your shortlist of tracked providers."}
+                                </p>
+                            </div>
+                            {/* Grid Search Input */}
+                            <input 
+                                type="text" 
+                                placeholder="Search List..." 
+                                style={{ padding: '10px', background: 'var(--bg-panel)', border: '1px solid var(--border-dim)', color: 'white', borderRadius: '2px', width: '200px' }} 
+                                value={searchQuery}
+                                onChange={e => setSearchQuery(e.target.value)} 
+                            />
+                        </div>
 
                         <div className="layout-grid">
                             {filtered.map(vpn => (
-                                <VPNCard key={vpn.name} vpn={vpn} isFav={favorites.includes(vpn.name)} toggleFav={toggleFav} />
+                                <VPNCard 
+                                    key={vpn.name} 
+                                    vpn={vpn} 
+                                    isFav={favorites.includes(vpn.name)} 
+                                    toggleFav={toggleFav} 
+                                    highlighted={highlighted === vpn.name}
+                                />
                             ))}
                         </div>
                     </div>
@@ -558,9 +686,17 @@
         }
 
         // --- LAYER 3: DEEP DETAIL CARD ---
-        function VPNCard({ vpn, isFav, toggleFav }) {
+        function VPNCard({ vpn, isFav, toggleFav, highlighted }) {
             const [expanded, setExpanded] = useState(false);
             const [tab, setTab] = useState('privacy');
+            const cardRef = useRef(null);
+
+            useEffect(() => {
+                if (highlighted && cardRef.current) {
+                    cardRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    setExpanded(true);
+                }
+            }, [highlighted]);
 
             const renderTabContent = () => {
                 switch(tab) {
@@ -603,7 +739,7 @@
             const Row = ({label, val}) => <div className="detail-row"><span className="detail-label">{label}</span><span className="detail-val" style={{color: val === '✓' ? 'var(--accent-win)' : 'inherit'}}>{val}</span></div>;
 
             return (
-                <div className="tech-card">
+                <div ref={cardRef} className={`tech-card ${highlighted ? 'highlight-card' : ''}`}>
                     <div className="card-header">
                         <div>
                             <span className="font-mono text-acid" style={{fontSize:'0.7rem'}}>#{vpn.rank} {vpn.bestFor}</span>
