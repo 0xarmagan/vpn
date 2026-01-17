@@ -45,7 +45,7 @@
             --border-bright: #CBD5E1;
             --text-primary: #0F172A;
             --text-secondary: #64748B;
-            --accent-acid: #4F46E5; /* Shift to deep blue for light mode readability */
+            --accent-acid: #4F46E5; 
             --accent-cyan: #06B6D4;
         }
 
@@ -252,8 +252,6 @@
             background: var(--bg-deep);
             z-index: 10;
         }
-        
-        /* Sticky First Column Fix */
         .tech-table td:first-child, .tech-table th:first-child {
             position: sticky;
             left: 0;
@@ -280,17 +278,12 @@
             background: rgba(204,255,0,0.1);
         }
 
-        /* UTILS */
-        .status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 6px; }
-        .dot-green { background: var(--accent-acid); box-shadow: 0 0 8px var(--accent-acid); }
-        .dot-red { background: var(--accent-danger); box-shadow: 0 0 8px var(--accent-danger); }
-
-        /* --- NEW COMPARISON MODULE STYLES --- */
+        /* COMPARISON MODULES */
         .comp-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
             gap: 24px;
-            margin-top: -50px; /* Overlap the hero section */
+            margin-top: -50px; 
             position: relative;
             z-index: 10;
         }
@@ -346,6 +339,66 @@
             border: 1px solid var(--accent-acid);
             font-weight: bold;
         }
+
+        /* NEW MODULE STYLES */
+        .section-header {
+            font-family: var(--font-display);
+            font-size: 1.5rem;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .section-header::before {
+            content: '';
+            display: block; width: 4px; height: 24px;
+            background: var(--accent-acid);
+        }
+
+        .matrix-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+        .matrix-table th {
+            text-align: left;
+            color: var(--text-secondary);
+            font-family: var(--font-mono);
+            padding: 12px;
+            border-bottom: 1px solid var(--border-dim);
+        }
+        .matrix-table td {
+            padding: 12px;
+            border-bottom: 1px solid var(--border-dim);
+            color: var(--text-primary);
+        }
+        
+        .icon-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            text-align: center;
+        }
+        .icon-box {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-dim);
+            padding: 16px 8px;
+            border-radius: 4px;
+        }
+        .icon-label {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            margin-top: 8px;
+            display: block;
+        }
+
+        /* UTILS */
+        .status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 6px; }
+        .dot-green { background: var(--accent-acid); box-shadow: 0 0 8px var(--accent-acid); }
+        .dot-red { background: var(--accent-danger); box-shadow: 0 0 8px var(--accent-danger); }
+        .check-mark { color: var(--accent-acid); font-weight: bold; }
+        .cross-mark { color: var(--text-secondary); opacity: 0.5; }
     </style>
 </head>
 <body>
@@ -354,13 +407,63 @@
     <script type="text/babel">
         const { useState, useEffect, useMemo, useRef } = React;
 
-        // --- DATA LAYER ---
+        // --- ENRICHED DATA LAYER ---
         const ALL_VPN_DATA = [
-            { name: "NordVPN", rank: 1, overallScore: 95, bestFor: "Overall Excellence", price: { monthly: "$12.99", annual: "$4.49", twoYear: "$3.39" }, devices: 10, servers: "8000+", countries: "126+", noLogs: "Verified", jurisdiction: "Panama", streaming: "Excellent", speeds: { download: 455, upload: 92, loss: 9, latency: 25 }, features: { killSwitch: true, splitTunnel: true, adBlock: true, portForward: false }, protocols: ["WireGuard", "OpenVPN", "IKEv2"], encryption: "AES-256-GCM", audit: "Deloitte (2025)", moneyBack: "30 days", support: 9 },
-            { name: "ProtonVPN", rank: 2, overallScore: 94, bestFor: "Privacy & Security", price: { monthly: "€9.99", annual: "€5.99", twoYear: "€4.99" }, devices: 10, servers: "15330+", countries: "126+", noLogs: "Verified", jurisdiction: "Switzerland", streaming: "Excellent", speeds: { download: 430, upload: 88, loss: 14, latency: 30 }, features: { killSwitch: true, splitTunnel: true, adBlock: true, portForward: true }, protocols: ["WireGuard", "OpenVPN"], encryption: "ChaCha20", audit: "Securitum (2025)", moneyBack: "30 days", support: 9 },
-            { name: "Surfshark", rank: 3, overallScore: 91, bestFor: "Best Value", price: { monthly: "€12.95", annual: "€3.99", twoYear: "€2.19" }, devices: "Unlimited", servers: "3200+", countries: "100+", noLogs: "Verified", jurisdiction: "Netherlands", streaming: "Excellent", speeds: { download: 445, upload: 90, loss: 11, latency: 28 }, features: { killSwitch: true, splitTunnel: true, adBlock: true, portForward: false }, protocols: ["WireGuard", "OpenVPN"], encryption: "ChaCha20", audit: "Cure53 (2025)", moneyBack: "30 days", support: 9 },
-            { name: "Mullvad", rank: 4, overallScore: 90, bestFor: "Maximum Privacy", price: { monthly: "€5.00", annual: "€5.00", twoYear: "€5.00" }, devices: 5, servers: "691+", countries: "45+", noLogs: "Verified", jurisdiction: "Sweden", streaming: "Good", speeds: { download: 425, upload: 85, loss: 15, latency: 32 }, features: { killSwitch: true, splitTunnel: true, adBlock: true, portForward: false }, protocols: ["WireGuard", "OpenVPN"], encryption: "AES-256", audit: "Ros (2024)", moneyBack: "30 days", support: 7 },
-            { name: "ExpressVPN", rank: 6, overallScore: 88, bestFor: "Global Network", price: { monthly: "$12.95", annual: "$6.67", twoYear: "$6.67" }, devices: 8, servers: "3200+", countries: "100+", noLogs: "Verified", jurisdiction: "BVI", streaming: "Excellent", speeds: { download: 410, upload: 82, loss: 18, latency: 31 }, features: { killSwitch: true, splitTunnel: true, adBlock: true, portForward: false }, protocols: ["Lightway", "OpenVPN"], encryption: "AES-256", audit: "KPMG (2024)", moneyBack: "30 days", support: 9 },
+            { 
+                name: "NordVPN", rank: 1, overallScore: 95, bestFor: "Overall Excellence", price: { monthly: "$12.99", annual: "$4.49", twoYear: "$3.39" }, 
+                devices: 10, servers: "8000+", countries: "126+", noLogs: "Verified", jurisdiction: "Panama", streaming: "Excellent", 
+                speeds: { download: 455, upload: 92, loss: 9, latency: 25 }, features: { killSwitch: true, splitTunnel: true, adBlock: true, portForward: false }, 
+                protocols: ["WireGuard", "OpenVPN", "IKEv2"], encryption: "AES-256-GCM", audit: "Deloitte (2025)", moneyBack: "30 days", support: 9,
+                // Enhanced fields
+                privacyDetails: { ramServers: true, auditFreq: "Annual", warrantCanary: true },
+                paymentMethods: ["Credit Card", "PayPal", "Crypto", "Google Pay"],
+                platforms: ["Windows", "Mac", "iOS", "Android", "Linux", "TV"],
+                streamingServices: { netflix: true, hulu: true, bbc: true, disney: true }
+            },
+            { 
+                name: "ProtonVPN", rank: 2, overallScore: 94, bestFor: "Privacy & Security", price: { monthly: "€9.99", annual: "€5.99", twoYear: "€4.99" }, 
+                devices: 10, servers: "15330+", countries: "126+", noLogs: "Verified", jurisdiction: "Switzerland", streaming: "Excellent", 
+                speeds: { download: 430, upload: 88, loss: 14, latency: 30 }, features: { killSwitch: true, splitTunnel: true, adBlock: true, portForward: true }, 
+                protocols: ["WireGuard", "OpenVPN"], encryption: "ChaCha20", audit: "Securitum (2025)", moneyBack: "30 days", support: 9,
+                privacyDetails: { ramServers: true, auditFreq: "Bi-Annual", warrantCanary: true },
+                paymentMethods: ["Credit Card", "PayPal", "Bitcoin", "Cash (Mail)"],
+                platforms: ["Windows", "Mac", "iOS", "Android", "Linux"],
+                streamingServices: { netflix: true, hulu: true, bbc: true, disney: true }
+            },
+            { 
+                name: "Surfshark", rank: 3, overallScore: 91, bestFor: "Best Value", price: { monthly: "€12.95", annual: "€3.99", twoYear: "€2.19" }, 
+                devices: "Unlimited", servers: "3200+", countries: "100+", noLogs: "Verified", jurisdiction: "Netherlands", streaming: "Excellent", 
+                speeds: { download: 445, upload: 90, loss: 11, latency: 28 }, features: { killSwitch: true, splitTunnel: true, adBlock: true, portForward: false }, 
+                protocols: ["WireGuard", "OpenVPN"], encryption: "ChaCha20", audit: "Cure53 (2025)", moneyBack: "30 days", support: 9,
+                privacyDetails: { ramServers: true, auditFreq: "Annual", warrantCanary: false },
+                paymentMethods: ["Credit Card", "PayPal", "Crypto", "Amazon Pay"],
+                platforms: ["Windows", "Mac", "iOS", "Android", "Linux", "TV"],
+                streamingServices: { netflix: true, hulu: true, bbc: true, disney: true }
+            },
+            { 
+                name: "Mullvad", rank: 4, overallScore: 90, bestFor: "Maximum Privacy", price: { monthly: "€5.00", annual: "€5.00", twoYear: "€5.00" }, 
+                devices: 5, servers: "691+", countries: "45+", noLogs: "Verified", jurisdiction: "Sweden", streaming: "Good", 
+                speeds: { download: 425, upload: 85, loss: 15, latency: 32 }, features: { killSwitch: true, splitTunnel: true, adBlock: true, portForward: false }, 
+                protocols: ["WireGuard", "OpenVPN"], encryption: "AES-256", audit: "Ros (2024)", moneyBack: "30 days", support: 7,
+                privacyDetails: { ramServers: true, auditFreq: "Continuous", warrantCanary: true },
+                paymentMethods: ["Cash (Mail)", "Crypto", "Voucher", "Card"],
+                platforms: ["Windows", "Mac", "iOS", "Android", "Linux"],
+                streamingServices: { netflix: false, hulu: false, bbc: true, disney: false }
+            },
+            { 
+                name: "ExpressVPN", rank: 6, overallScore: 88, bestFor: "Global Network", price: { monthly: "$12.95", annual: "$6.67", twoYear: "$6.67" }, 
+                devices: 8, servers: "3200+", countries: "100+", noLogs: "Verified", jurisdiction: "BVI", streaming: "Excellent", 
+                speeds: { download: 410, upload: 82, loss: 18, latency: 31 }, features: { killSwitch: true, splitTunnel: true, adBlock: true, portForward: false }, 
+                protocols: ["Lightway", "OpenVPN"], encryption: "AES-256", audit: "KPMG (2024)", moneyBack: "30 days", support: 9,
+                privacyDetails: { ramServers: true, auditFreq: "Annual", warrantCanary: false },
+                paymentMethods: ["Credit Card", "PayPal", "Bitcoin"],
+                platforms: ["Windows", "Mac", "iOS", "Android", "Linux", "Router"],
+                streamingServices: { netflix: true, hulu: true, bbc: true, disney: true }
+            }
+        ];
+        
+        // Fill rest with basic data for table view
+        const FULL_VPN_LIST = [...ALL_VPN_DATA, 
             { name: "Private Internet Access", rank: 5, overallScore: 87, bestFor: "US-based Users", price: { monthly: "$11.95", annual: "$3.33", twoYear: "$2.11" }, devices: "Unlimited", servers: "34000+", countries: "90+", noLogs: "Verified", jurisdiction: "USA", streaming: "Good", speeds: { download: 380, upload: 76, loss: 24, latency: 35 }, features: { killSwitch: true, splitTunnel: true, adBlock: true, portForward: true }, protocols: ["WireGuard", "OpenVPN"], encryption: "AES-256", audit: "Deloitte (2024)", moneyBack: "30 days", support: 8 },
             { name: "CyberGhost", rank: 7, overallScore: 85, bestFor: "Streaming", price: { monthly: "€12.99", annual: "€2.19", twoYear: "€2.03" }, devices: 7, servers: "11700+", countries: "100+", noLogs: "Verified", jurisdiction: "Romania", streaming: "Excellent", speeds: { download: 420, upload: 84, loss: 16, latency: 33 }, features: { killSwitch: true, splitTunnel: true, adBlock: true, portForward: false }, protocols: ["WireGuard", "OpenVPN"], encryption: "ChaCha20", audit: "Deloitte (2024)", moneyBack: "45 days", support: 9 },
             { name: "Windscribe", rank: 8, overallScore: 82, bestFor: "Free Tier", price: { monthly: "$9.00", annual: "$4.08", twoYear: "$3.00" }, devices: "Unlimited", servers: "Undisclosed", countries: "69+", noLogs: "Claimed", jurisdiction: "Canada", streaming: "Good", speeds: { download: 350, upload: 70, loss: 30, latency: 45 }, features: { killSwitch: true, splitTunnel: true, adBlock: true, portForward: true }, protocols: ["WireGuard", "OpenVPN"], encryption: "AES-256", audit: "KPMG (2024)", moneyBack: "3 days", support: 6 },
@@ -412,9 +515,9 @@
 
                     <main style={{ minHeight: '80vh' }}>
                         {activeTab === 'dashboard' && <DashboardView onNav={setActiveTab} />}
-                        {activeTab === 'grid' && <GridView vpns={ALL_VPN_DATA} favorites={favorites} toggleFav={toggleFav} />}
-                        {activeTab === 'table' && <TableView vpns={ALL_VPN_DATA} />}
-                        {activeTab === 'favorites' && <GridView vpns={ALL_VPN_DATA.filter(v => favorites.includes(v.name))} favorites={favorites} toggleFav={toggleFav} emptyMsg="No favorites tracked." />}
+                        {activeTab === 'grid' && <GridView vpns={FULL_VPN_LIST} favorites={favorites} toggleFav={toggleFav} />}
+                        {activeTab === 'table' && <TableView vpns={FULL_VPN_LIST} />}
+                        {activeTab === 'favorites' && <GridView vpns={FULL_VPN_LIST.filter(v => favorites.includes(v.name))} favorites={favorites} toggleFav={toggleFav} emptyMsg="No favorites tracked." />}
                     </main>
 
                     <Footer />
@@ -441,8 +544,11 @@
             );
         }
 
-        // --- NEW DASHBOARD WITH COMPARISON MODULES ---
+        // --- ENRICHED DASHBOARD ---
         function DashboardView({ onNav }) {
+            // Filter top providers that have the detailed enriched data
+            const topProviders = ALL_VPN_DATA.slice(0, 5);
+
             return (
                 <div className="animate-enter">
                     <section className="hero-glitch" style={{ paddingBottom: '120px' }}>
@@ -459,37 +565,135 @@
                         </div>
                     </section>
 
-                    <div style={{ maxWidth: '1440px', margin: '0 auto', padding: '0 24px' }}>
-                        <div className="comp-grid">
+                    <div style={{ maxWidth: '1440px', margin: '0 auto', padding: '0 24px', paddingBottom: '80px' }}>
+                        {/* 1. TACTICAL METRICS */}
+                        <div className="comp-grid" style={{ marginBottom: '80px' }}>
                             <TacticalComparison 
                                 label="VELOCITY BENCHMARK"
-                                winner="NordVPN"
-                                winnerVal="455 Mbps"
-                                loser="Avg. Provider"
-                                loserVal="210 Mbps"
-                                delta="+116% FASTER"
-                                type="speed"
+                                winner="NordVPN" winnerVal="455 Mbps"
+                                loser="Avg. Provider" loserVal="210 Mbps"
+                                delta="+116% FASTER" type="speed"
                             />
                             <TacticalComparison 
                                 label="COST EFFICIENCY"
-                                winner="Surfshark"
-                                winnerVal="$2.19 / mo"
-                                loser="ExpressVPN"
-                                loserVal="$6.67 / mo"
-                                delta="67% CHEAPER"
-                                type="price"
+                                winner="Surfshark" winnerVal="$2.19 / mo"
+                                loser="ExpressVPN" loserVal="$6.67 / mo"
+                                delta="67% CHEAPER" type="price"
                             />
                             <TacticalComparison 
                                 label="SERVER NETWORK"
-                                winner="PIA"
-                                winnerVal="34,000 Nodes"
-                                loser="NordVPN"
-                                loserVal="6,000 Nodes"
-                                delta="5X COVERAGE"
-                                type="network"
+                                winner="PIA" winnerVal="34,000 Nodes"
+                                loser="NordVPN" loserVal="6,000 Nodes"
+                                delta="5X COVERAGE" type="network"
                             />
                         </div>
+
+                        {/* 2. SECURITY MATRIX */}
+                        <div className="animate-enter" style={{ animationDelay: '0.2s', marginBottom: '60px' }}>
+                            <h2 className="section-header">SECURITY PROTOCOLS</h2>
+                            <div className="tech-card">
+                                <div style={{ overflowX: 'auto' }}>
+                                    <table className="matrix-table">
+                                        <thead>
+                                            <tr>
+                                                <th>PROVIDER</th>
+                                                <th>JURISDICTION</th>
+                                                <th>LOGGING POLICY</th>
+                                                <th>AUDIT FREQ.</th>
+                                                <th>RAM SERVERS</th>
+                                                <th>WARRANT CANARY</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {topProviders.map(v => (
+                                                <tr key={v.name}>
+                                                    <td className="font-display">{v.name}</td>
+                                                    <td>{v.jurisdiction}</td>
+                                                    <td className="text-acid">{v.noLogs}</td>
+                                                    <td className="font-mono">{v.privacyDetails.auditFreq}</td>
+                                                    <td>{v.privacyDetails.ramServers ? <span className="status-dot dot-green"></span> : <span className="status-dot dot-red"></span>}</td>
+                                                    <td>{v.privacyDetails.warrantCanary ? <span className="check-mark">✓</span> : <span className="cross-mark">✗</span>}</td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* 3. STREAMING & PLATFORMS SPLIT */}
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px', marginBottom: '60px' }}>
+                            {/* Streaming */}
+                            <div className="animate-enter" style={{ animationDelay: '0.3s' }}>
+                                <h2 className="section-header">CONTENT DECRYPTION</h2>
+                                <div className="tech-card" style={{ padding: '24px' }}>
+                                    {topProviders.map(v => (
+                                        <div key={v.name} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px', paddingBottom: '16px', borderBottom: '1px solid var(--border-dim)' }}>
+                                            <span className="font-mono">{v.name}</span>
+                                            <div style={{ display: 'flex', gap: '12px' }}>
+                                                <StreamIcon active={v.streamingServices.netflix} label="NFLX" />
+                                                <StreamIcon active={v.streamingServices.hulu} label="HULU" />
+                                                <StreamIcon active={v.streamingServices.bbc} label="BBC" />
+                                                <StreamIcon active={v.streamingServices.disney} label="DIS+" />
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Platforms */}
+                            <div className="animate-enter" style={{ animationDelay: '0.4s' }}>
+                                <h2 className="section-header">DEVICE VECTOR</h2>
+                                <div className="tech-card" style={{ padding: '24px' }}>
+                                    {topProviders.map(v => (
+                                        <div key={v.name} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px', paddingBottom: '16px', borderBottom: '1px solid var(--border-dim)' }}>
+                                            <div>
+                                                <div className="font-mono">{v.name}</div>
+                                                <div className="text-muted" style={{ fontSize: '0.7rem' }}>{v.devices} Conn.</div>
+                                            </div>
+                                            <div style={{ display: 'flex', gap: '6px' }}>
+                                                {v.platforms.includes('Windows') && <span className="icon-box" style={{padding: '4px 8px', fontSize: '0.7rem'}}>WIN</span>}
+                                                {v.platforms.includes('Mac') && <span className="icon-box" style={{padding: '4px 8px', fontSize: '0.7rem'}}>MAC</span>}
+                                                {v.platforms.includes('iOS') && <span className="icon-box" style={{padding: '4px 8px', fontSize: '0.7rem'}}>iOS</span>}
+                                                {v.platforms.includes('Linux') && <span className="icon-box" style={{padding: '4px 8px', fontSize: '0.7rem'}}>LIN</span>}
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* 4. PAYMENT & ANONYMITY */}
+                        <div className="animate-enter" style={{ animationDelay: '0.5s' }}>
+                            <h2 className="section-header">TRANSACTION ANONYMITY</h2>
+                            <div className="tech-card" style={{ padding: '24px' }}>
+                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '24px' }}>
+                                    {topProviders.map(v => (
+                                        <div key={v.name} style={{ border: '1px solid var(--border-dim)', padding: '16px', borderRadius: '4px' }}>
+                                            <div className="font-display" style={{ marginBottom: '12px' }}>{v.name}</div>
+                                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                                                {v.paymentMethods.map(pm => (
+                                                    <span key={pm} style={{ fontSize: '0.7rem', background: pm.includes('Cash') || pm.includes('Crypto') ? 'rgba(204,255,0,0.1)' : 'var(--bg-surface)', color: pm.includes('Cash') || pm.includes('Crypto') ? 'var(--accent-acid)' : 'var(--text-secondary)', padding: '4px 8px', border: '1px solid var(--border-dim)' }}>
+                                                        {pm}
+                                                    </span>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
+                </div>
+            );
+        }
+
+        function StreamIcon({ active, label }) {
+            return (
+                <div style={{ textAlign: 'center', opacity: active ? 1 : 0.3 }}>
+                    <div style={{ width: '32px', height: '20px', background: active ? 'var(--accent-acid)' : 'var(--border-dim)', borderRadius: '2px', marginBottom: '4px' }}></div>
+                    <span style={{ fontSize: '0.6rem', fontFamily: 'var(--font-mono)' }}>{label}</span>
                 </div>
             );
         }
