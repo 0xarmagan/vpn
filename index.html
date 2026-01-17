@@ -8,7 +8,6 @@
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Manrope:wght@300;400;600;800&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
@@ -281,29 +280,72 @@
             background: rgba(204,255,0,0.1);
         }
 
-        /* MODAL */
-        .modal-overlay {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.9);
-            display: flex; align-items: center; justify-content: center; z-index: 1000;
-            backdrop-filter: blur(10px);
-        }
-        .modal-content {
-            background: var(--bg-panel);
-            border: 1px solid var(--border-bright);
-            padding: 40px;
-            width: 90%; max-width: 500px;
-            box-shadow: 0 0 50px rgba(0,0,0,0.8);
-            position: relative;
-        }
-        .modal-content::after {
-            content: ''; position: absolute; top: -1px; left: -1px; width: 20px; height: 20px;
-            border-top: 2px solid var(--accent-acid); border-left: 2px solid var(--accent-acid);
-        }
-
         /* UTILS */
         .status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 6px; }
         .dot-green { background: var(--accent-acid); box-shadow: 0 0 8px var(--accent-acid); }
         .dot-red { background: var(--accent-danger); box-shadow: 0 0 8px var(--accent-danger); }
+
+        /* --- NEW COMPARISON MODULE STYLES --- */
+        .comp-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 24px;
+            margin-top: -50px; /* Overlap the hero section */
+            position: relative;
+            z-index: 10;
+        }
+
+        .comp-card {
+            background: var(--bg-panel);
+            border: 1px solid var(--border-dim);
+            border-left: 2px solid var(--accent-acid);
+            padding: 24px;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            transition: transform 0.3s var(--ease-snap);
+        }
+        .comp-card:hover { transform: translateY(-5px); border-color: var(--border-bright); }
+
+        .bar-track {
+            height: 6px;
+            background: var(--bg-surface);
+            margin-top: 8px;
+            position: relative;
+            overflow: hidden;
+            border-radius: 2px;
+        }
+        .bar-fill {
+            height: 100%;
+            position: absolute; top: 0; left: 0;
+            background: var(--accent-acid);
+            background-image: repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 4px,
+                rgba(0,0,0,0.4) 4px,
+                rgba(0,0,0,0.4) 8px
+            );
+            transform-origin: left;
+            animation: growBar 1s var(--ease-snap) forwards;
+        }
+        .bar-fill.secondary {
+            background: var(--border-bright);
+            background-image: none;
+            animation-delay: 0.2s;
+        }
+        @keyframes growBar { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
+        .delta-badge {
+            position: absolute;
+            top: 16px; right: 16px;
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            background: rgba(204, 255, 0, 0.1);
+            color: var(--accent-acid);
+            padding: 4px 8px;
+            border: 1px solid var(--accent-acid);
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -399,10 +441,11 @@
             );
         }
 
+        // --- NEW DASHBOARD WITH COMPARISON MODULES ---
         function DashboardView({ onNav }) {
             return (
                 <div className="animate-enter">
-                    <section className="hero-glitch">
+                    <section className="hero-glitch" style={{ paddingBottom: '120px' }}>
                         <span className="hero-tag">INTELLIGENCE REPORT // JANUARY 2026</span>
                         <h1 className="font-display" style={{ fontSize: 'clamp(2.5rem, 5vw, 4rem)', marginBottom: '16px', lineHeight: 0.9 }}>
                             SECURE YOUR<br/>DIGITAL FOOTPRINT
@@ -412,24 +455,76 @@
                         </p>
                         <div style={{ display: 'flex', gap: '16px', justifyContent: 'center' }}>
                             <button className="btn btn-primary" onClick={() => onNav('grid')}>INITIATE COMPARISON</button>
+                            <button className="btn btn-outline" onClick={() => onNav('table')}>RAW DATA</button>
                         </div>
                     </section>
 
-                    <div className="layout-grid" style={{ marginTop: '-40px' }}>
-                        <StatCard label="TOP VELOCITY" value="NORDVPN" sub="455 MBPS" />
-                        <StatCard label="BEST PRIVACY" value="MULLVAD" sub="AUDITED / CASH" />
-                        <StatCard label="VALUE LEADER" value="SURFSHARK" sub="€2.19 / MO" />
+                    <div style={{ maxWidth: '1440px', margin: '0 auto', padding: '0 24px' }}>
+                        <div className="comp-grid">
+                            <TacticalComparison 
+                                label="VELOCITY BENCHMARK"
+                                winner="NordVPN"
+                                winnerVal="455 Mbps"
+                                loser="Avg. Provider"
+                                loserVal="210 Mbps"
+                                delta="+116% FASTER"
+                                type="speed"
+                            />
+                            <TacticalComparison 
+                                label="COST EFFICIENCY"
+                                winner="Surfshark"
+                                winnerVal="$2.19 / mo"
+                                loser="ExpressVPN"
+                                loserVal="$6.67 / mo"
+                                delta="67% CHEAPER"
+                                type="price"
+                            />
+                            <TacticalComparison 
+                                label="SERVER NETWORK"
+                                winner="PIA"
+                                winnerVal="34,000 Nodes"
+                                loser="NordVPN"
+                                loserVal="6,000 Nodes"
+                                delta="5X COVERAGE"
+                                type="network"
+                            />
+                        </div>
                     </div>
                 </div>
             );
         }
 
-        function StatCard({ label, value, sub }) {
+        function TacticalComparison({ label, winner, winnerVal, loser, loserVal, delta, type }) {
+            const isPrice = type === 'price';
+            const wPercent = isPrice ? '40%' : '90%';
+            const lPercent = isPrice ? '90%' : '45%';
+            
             return (
-                <div className="tech-card" style={{ padding: '24px', alignItems: 'center', textAlign: 'center' }}>
-                    <div className="font-mono text-acid" style={{ fontSize: '0.75rem', marginBottom: '8px' }}>{label}</div>
-                    <div className="font-display" style={{ fontSize: '2rem' }}>{value}</div>
-                    <div className="text-muted font-mono" style={{ fontSize: '0.8rem', marginTop: '4px' }}>{sub}</div>
+                <div className="comp-card">
+                    <div className="delta-badge">{delta}</div>
+                    <div className="font-mono text-muted" style={{ fontSize: '0.7rem', marginBottom: '16px', letterSpacing: '0.05em' }}>
+                        // {label}
+                    </div>
+
+                    <div style={{ marginBottom: '16px' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+                            <span className="font-display" style={{ fontSize: '1.25rem' }}>{winner}</span>
+                            <span className="font-mono text-acid" style={{ fontWeight: 'bold' }}>{winnerVal}</span>
+                        </div>
+                        <div className="bar-track">
+                            <div className="bar-fill" style={{ width: wPercent }}></div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+                            <span className="font-mono text-muted" style={{ fontSize: '0.85rem' }}>{loser}</span>
+                            <span className="font-mono text-muted" style={{ fontSize: '0.85rem' }}>{loserVal}</span>
+                        </div>
+                        <div className="bar-track">
+                            <div className="bar-fill secondary" style={{ width: lPercent }}></div>
+                        </div>
+                    </div>
                 </div>
             );
         }
