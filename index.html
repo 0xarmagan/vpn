@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ultimate VPN Compass 2026 - Final Edition</title>
+    <title>VPN Compass 2026 - Ultimate Comparison</title>
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -12,57 +12,61 @@
         @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
         
         * { margin: 0; padding: 0; box-sizing: border-box; }
+        
         :root {
             --color-primary: #4F46E5; --color-primary-dark: #4338CA; --color-success: #10B981;
             --color-warning: #F59E0B; --color-danger: #F43F5E; --color-accent: #06B6D4;
             --color-bg: #0F172A; --color-bg-secondary: #1E293B; --color-bg-tertiary: #334155;
             --color-text: #F1F5F9; --color-text-muted: #94A3B8; --color-border: #334155;
         }
+
         [data-theme="light"] {
             --color-bg: #FFFFFF; --color-bg-secondary: #F8FAFC; --color-bg-tertiary: #E2E8F0;
             --color-text: #0F172A; --color-text-muted: #64748B; --color-border: #E2E8F0;
         }
-        body { font-family: 'Inter', sans-serif; background: var(--color-bg); color: var(--color-text); line-height: 1.6; transition: all 0.3s; overflow-x: hidden; }
+
+        body { font-family: 'Inter', sans-serif; background: var(--color-bg); color: var(--color-text); line-height: 1.6; transition: all 0.3s; }
         .font-display { font-family: 'Space Grotesk', sans-serif; }
         .font-mono { font-family: 'JetBrains Mono', monospace; }
-        
-        /* Hero Section */
-        .hero { background: linear-gradient(135deg, rgba(79, 70, 229, 0.1), rgba(6, 182, 212, 0.1)); padding: 80px 24px; text-align: center; border-radius: 24px; margin-bottom: 40px; }
+
+        /* Hero (Phase 1 UI) */
+        .hero { background: linear-gradient(135deg, rgba(79, 70, 229, 0.1), rgba(6, 182, 212, 0.1)); padding: 80px 24px; text-align: center; border-radius: 24px; margin: 20px; }
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
         .animate-fade-in-up { animation: fadeInUp 0.6s ease-out forwards; }
-        
-        /* Layout Components */
-        .card { background: var(--color-bg-secondary); border-radius: 16px; padding: 24px; border: 1px solid var(--color-border); transition: all 0.3s; height: 100%; display: flex; flex-direction: column; }
-        .card:hover { transform: translateY(-4px); box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
-        .btn { padding: 10px 20px; border-radius: 8px; font-weight: 600; cursor: pointer; border: none; display: inline-flex; align-items: center; gap: 8px; transition: 0.2s; justify-content: center; }
+
+        /* Navigation (Phase 2) */
+        .nav-tabs { display: flex; justify-content: center; gap: 12px; margin: -30px 0 40px; position: relative; z-index: 10; flex-wrap: wrap; }
+        .nav-tab { background: var(--color-bg-secondary); color: var(--color-text-muted); padding: 12px 24px; border-radius: 99px; border: 1px solid var(--color-border); cursor: pointer; font-weight: 600; transition: 0.2s; }
+        .nav-tab.active { background: var(--color-primary); color: white; box-shadow: 0 4px 15px rgba(79, 70, 229, 0.4); border-color: var(--color-primary); }
+
+        /* Grid & Cards */
+        .container { max-width: 1400px; margin: 0 auto; padding: 0 24px; }
+        .vpn-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 24px; }
+        .card { background: var(--color-bg-secondary); border-radius: 16px; padding: 24px; border: 1px solid var(--color-border); transition: all 0.3s; display: flex; flex-direction: column; }
+        .card:hover { transform: translateY(-4px); box-shadow: 0 10px 25px rgba(0,0,0,0.4); }
+
+        /* Buttons */
+        .btn { padding: 10px 20px; border-radius: 8px; font-weight: 600; cursor: pointer; border: none; display: inline-flex; align-items: center; gap: 8px; justify-content: center; }
         .btn-primary { background: var(--color-primary); color: white; }
         .btn-secondary { background: var(--color-bg-tertiary); color: var(--color-text); }
-        
-        .tabs { display: flex; gap: 8px; border-bottom: 2px solid var(--color-border); margin-bottom: 24px; position: sticky; top: 0; background: var(--color-bg); z-index: 100; padding: 15px 0; }
-        .tab { padding: 12px 24px; background: none; border: none; color: var(--color-text-muted); font-weight: 600; cursor: pointer; border-bottom: 2px solid transparent; }
-        .tab.active { color: var(--color-primary); border-bottom-color: var(--color-primary); }
-        
-        /* Grid System */
-        .filters-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px; }
-        .vpn-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 24px; }
-        
+
+        /* Tables */
+        .table-container { overflow-x: auto; margin-top: 20px; border-radius: 12px; border: 1px solid var(--color-border); }
+        table { width: 100%; border-collapse: collapse; min-width: 1000px; }
+        th, td { padding: 16px; border-bottom: 1px solid var(--color-border); text-align: left; }
+        th { background: var(--color-bg-tertiary); font-family: 'Space Grotesk'; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em; }
+
         /* Badges */
-        .score-badge { padding: 4px 12px; border-radius: 9999px; font-weight: 600; font-family: 'JetBrains Mono'; font-size: 0.85rem; }
-        .score-excellent { background: var(--color-success); color: white; }
-        .score-good { background: var(--color-warning); color: white; }
+        .badge { padding: 2px 8px; border-radius: 6px; font-size: 0.75rem; background: rgba(79, 70, 229, 0.2); color: var(--color-primary); font-weight: 600; }
+        .score-badge { padding: 4px 12px; border-radius: 99px; font-family: 'JetBrains Mono'; font-weight: 700; background: var(--color-success); color: white; }
+
+        /* Quiz Modal */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: flex; align-items: center; justify-content: center; z-index: 1000; backdrop-filter: blur(8px); }
+        .modal { background: var(--color-bg); border-radius: 20px; padding: 40px; max-width: 600px; width: 90%; max-height: 90vh; overflow-y: auto; position: relative; }
         
-        .comparison-table { overflow-x: auto; margin-top: 20px; }
-        table { width: 100%; border-collapse: collapse; min-width: 800px; }
-        th, td { padding: 12px; border-bottom: 1px solid var(--color-border); text-align: left; }
-        th { background: var(--color-bg-tertiary); position: sticky; top: 0; }
-        
-        /* Modal */
-        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 1000; backdrop-filter: blur(4px); }
-        .modal { background: var(--color-bg); border-radius: 16px; padding: 32px; max-width: 600px; width: 90%; max-height: 90vh; overflow-y: auto; }
-        
-        input, select { background: var(--color-bg-secondary); border: 1px solid var(--color-border); color: var(--color-text); padding: 10px; border-radius: 8px; width: 100%; }
-        .slider { width: 100%; height: 6px; border-radius: 3px; background: var(--color-bg-tertiary); outline: none; -webkit-appearance: none; margin: 10px 0; }
-        .slider::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%; background: var(--color-primary); cursor: pointer; }
+        /* Stats Table Colors */
+        .check-icon { color: var(--color-success); font-weight: bold; }
+        .cross-icon { color: var(--color-danger); font-weight: bold; }
     </style>
 </head>
 <body>
@@ -71,41 +75,42 @@
     <script type="text/babel">
         const { useState, useEffect, useMemo, useRef } = React;
 
-        // --- ALL 26 VPN DATA FROM JSON ---
+        // --- COMPLETE 26 VPN DATA INTEGRATION ---
         const ALL_VPN_DATA = [
-            { name: "NordVPN", overallScore: 95, rank: 1, bestFor: "Overall Excellence", price: { monthly: "$12.99", annual: "$4.49", twoYear: "$3.39" }, servers: "8000+", countries: "126+", noLogs: "Verified", jurisdiction: "Panama", streaming: "Excellent", speeds: { download: 455, loss: 9, latency: 25 }, features: { killSwitch: true, splitTunnel: true, adBlock: true }, protocols: ["WireGuard", "OpenVPN"] },
-            { name: "ProtonVPN", overallScore: 94, rank: 2, bestFor: "Privacy & Security", price: { monthly: "€9.99", annual: "€5.99", twoYear: "€4.99" }, servers: "15330+", countries: "126+", noLogs: "Verified", jurisdiction: "Switzerland", streaming: "Excellent", speeds: { download: 430, loss: 14, latency: 30 }, features: { killSwitch: true, splitTunnel: true, adBlock: true }, protocols: ["WireGuard", "OpenVPN"] },
-            { name: "Surfshark", overallScore: 91, rank: 3, bestFor: "Best Value", price: { monthly: "€12.95", annual: "€3.99", twoYear: "€2.19" }, servers: "3200+", countries: "100+", noLogs: "Verified", jurisdiction: "Netherlands", streaming: "Excellent", speeds: { download: 445, loss: 11, latency: 28 }, features: { killSwitch: true, splitTunnel: true, adBlock: true }, protocols: ["WireGuard", "OpenVPN"] },
-            { name: "Mullvad", overallScore: 90, rank: 4, bestFor: "Maximum Privacy", price: { monthly: "€5.00", annual: "€5.00", twoYear: "€5.00" }, servers: "691+", countries: "45+", noLogs: "Verified", jurisdiction: "Sweden", streaming: "Good", speeds: { download: 425, loss: 15, latency: 32 }, features: { killSwitch: true, splitTunnel: true, adBlock: true }, protocols: ["WireGuard", "OpenVPN"] },
-            { name: "ExpressVPN", overallScore: 88, rank: 6, bestFor: "Global Network", price: { monthly: "$12.95", annual: "$6.67", twoYear: "$6.67" }, servers: "3200+", countries: "100+", noLogs: "Verified", jurisdiction: "British Virgin Islands", streaming: "Excellent", speeds: { download: 410, loss: 18, latency: 31 }, features: { killSwitch: true, splitTunnel: true, adBlock: true }, protocols: ["Lightway", "OpenVPN"] },
-            { name: "Private Internet Access", overallScore: 87, rank: 5, bestFor: "US-based Users", price: { monthly: "$11.95", annual: "$3.33", twoYear: "$2.11" }, servers: "34000+", countries: "90+", noLogs: "Verified", jurisdiction: "USA", streaming: "Good", speeds: { download: 380, loss: 24, latency: 35 }, features: { killSwitch: true, splitTunnel: true, adBlock: true }, protocols: ["WireGuard", "OpenVPN"] },
-            { name: "CyberGhost", overallScore: 85, rank: 7, bestFor: "Streaming", price: { monthly: "€12.99", annual: "€2.19", twoYear: "€2.03" }, servers: "11700+", countries: "100+", noLogs: "Verified", jurisdiction: "Romania", streaming: "Excellent", speeds: { download: 420, loss: 16, latency: 33 }, features: { killSwitch: true, splitTunnel: true, adBlock: true }, protocols: ["WireGuard", "OpenVPN"] },
-            { name: "Windscribe", overallScore: 82, rank: 8, bestFor: "Free Tier", price: { monthly: "$9.00", annual: "$4.08", twoYear: "$3.00" }, servers: "Undisclosed", countries: "69+", noLogs: "Claimed", jurisdiction: "Canada", streaming: "Good", speeds: { download: 350, loss: 30, latency: 45 }, features: { killSwitch: true, splitTunnel: true, adBlock: true }, protocols: ["WireGuard", "OpenVPN"] },
-            { name: "IVPN", overallScore: 81, rank: 9, bestFor: "Transparency", price: { monthly: "$6.00", annual: "$5.00", twoYear: "$4.00" }, servers: "70+", countries: "32+", noLogs: "Verified", jurisdiction: "Gibraltar", streaming: "Poor", speeds: { download: 390, loss: 12, latency: 29 }, features: { killSwitch: true, splitTunnel: true, adBlock: true }, protocols: ["WireGuard", "OpenVPN"] },
-            { name: "AirVPN", overallScore: 78, rank: 10, bestFor: "Advanced Users", price: { monthly: "€7.00", annual: "€4.00", twoYear: "€3.00" }, servers: "200+", countries: "23+", noLogs: "Verified", jurisdiction: "Italy", streaming: "Average", speeds: { download: 340, loss: 22, latency: 38 }, features: { killSwitch: true, splitTunnel: true, adBlock: false }, protocols: ["OpenVPN"] },
-            { name: "Hide.me", overallScore: 77, rank: 11, bestFor: "Free Version", price: { monthly: "$9.95", annual: "$4.99", twoYear: "$2.59" }, servers: "2100+", countries: "78+", noLogs: "Verified", jurisdiction: "Malaysia", streaming: "Good", speeds: { download: 385, loss: 20, latency: 34 }, features: { killSwitch: true, splitTunnel: true, adBlock: false }, protocols: ["WireGuard", "SoftEther"] },
-            { name: "IPVanish", overallScore: 76, rank: 12, bestFor: "Unlimited Devices", price: { monthly: "$11.99", annual: "$3.33", twoYear: "$2.50" }, servers: "2200+", countries: "75+", noLogs: "Verified", jurisdiction: "USA", streaming: "Good", speeds: { download: 415, loss: 15, latency: 30 }, features: { killSwitch: true, splitTunnel: true, adBlock: false }, protocols: ["WireGuard", "OpenVPN"] },
-            { name: "StrongVPN", overallScore: 74, rank: 13, bestFor: "Basic Use", price: { monthly: "$11.99", annual: "$3.97", twoYear: "$3.50" }, servers: "950+", countries: "30+", noLogs: "Claimed", jurisdiction: "USA", streaming: "Good", speeds: { download: 320, loss: 28, latency: 40 }, features: { killSwitch: true, splitTunnel: false, adBlock: false }, protocols: ["WireGuard", "IKEv2"] },
-            { name: "VyprVPN", overallScore: 73, rank: 14, bestFor: "Chameleon Protocol", price: { monthly: "$10.00", annual: "$5.00", twoYear: "$3.00" }, servers: "700+", countries: "70+", noLogs: "Verified", jurisdiction: "Switzerland", streaming: "Good", speeds: { download: 310, loss: 25, latency: 42 }, features: { killSwitch: true, splitTunnel: true, adBlock: false }, protocols: ["Chameleon", "OpenVPN"] },
-            { name: "Bitdefender VPN", overallScore: 72, rank: 15, bestFor: "Antivirus Users", price: { monthly: "$6.99", annual: "$2.50", twoYear: "$2.00" }, servers: "4000+", countries: "50+", noLogs: "Claimed", jurisdiction: "Romania", streaming: "Average", speeds: { download: 420, loss: 10, latency: 26 }, features: { killSwitch: true, splitTunnel: false, adBlock: true }, protocols: ["Catapult Hydra"] },
-            { name: "Hotspot Shield", overallScore: 70, rank: 16, bestFor: "Speed (Proprietary)", price: { monthly: "$12.99", annual: "$7.99", twoYear: "$6.00" }, servers: "1800+", countries: "80+", noLogs: "Claimed", jurisdiction: "USA", streaming: "Good", speeds: { download: 440, loss: 8, latency: 24 }, features: { killSwitch: true, splitTunnel: true, adBlock: false }, protocols: ["Hydra"] },
-            { name: "TunnelBear", overallScore: 68, rank: 17, bestFor: "Beginners", price: { monthly: "$9.99", annual: "$4.99", twoYear: "$3.33" }, servers: "5000+", countries: "48+", noLogs: "Verified", jurisdiction: "Canada", streaming: "Poor", speeds: { download: 280, loss: 35, latency: 50 }, features: { killSwitch: true, splitTunnel: true, adBlock: false }, protocols: ["OpenVPN", "IKEv2"] },
-            { name: "Avast SecureLine", overallScore: 65, rank: 18, bestFor: "Simplicity", price: { monthly: "$4.99", annual: "$3.99", twoYear: "$2.99" }, servers: "700+", countries: "34+", noLogs: "Claimed", jurisdiction: "Czech Republic", streaming: "Average", speeds: { download: 300, loss: 30, latency: 45 }, features: { killSwitch: true, splitTunnel: false, adBlock: false }, protocols: ["WireGuard", "OpenVPN"] },
-            { name: "Norton Secure VPN", overallScore: 62, rank: 19, bestFor: "Norton 360 Users", price: { monthly: "$4.99", annual: "$3.33", twoYear: "$2.50" }, servers: "2000+", countries: "30+", noLogs: "Claimed", jurisdiction: "USA", streaming: "Average", speeds: { download: 250, loss: 40, latency: 55 }, features: { killSwitch: false, splitTunnel: false, adBlock: true }, protocols: ["OpenVPN"] },
-            { name: "Kaspersky VPN", overallScore: 60, rank: 20, bestFor: "Kaspersky Users", price: { monthly: "$4.99", annual: "$2.50", twoYear: "$1.80" }, servers: "2000+", countries: "35+", noLogs: "Claimed", jurisdiction: "Switzerland", streaming: "Good", speeds: { download: 430, loss: 12, latency: 28 }, features: { killSwitch: true, splitTunnel: false, adBlock: false }, protocols: ["Catapult Hydra"] },
-            { name: "PureVPN", overallScore: 58, rank: 21, bestFor: "Price", price: { monthly: "$10.95", annual: "$1.99", twoYear: "$1.33" }, servers: "6500+", countries: "78+", noLogs: "Verified", jurisdiction: "British Virgin Islands", streaming: "Average", speeds: { download: 360, loss: 25, latency: 38 }, features: { killSwitch: true, splitTunnel: true, adBlock: false }, protocols: ["WireGuard", "OpenVPN"] },
-            { name: "ZenMate", overallScore: 55, rank: 22, bestFor: "Browser Extension", price: { monthly: "$10.99", annual: "$4.49", twoYear: "$1.64" }, servers: "4700+", countries: "80+", noLogs: "Claimed", jurisdiction: "Germany", streaming: "Average", speeds: { download: 240, loss: 45, latency: 60 }, features: { killSwitch: true, splitTunnel: false, adBlock: false }, protocols: ["OpenVPN", "IKEv2"] },
-            { name: "Atlas VPN", overallScore: 52, rank: 23, bestFor: "Budget (Acquired)", price: { monthly: "$10.99", annual: "$3.29", twoYear: "$1.64" }, servers: "1000+", countries: "42+", noLogs: "Claimed", jurisdiction: "USA", streaming: "Good", speeds: { download: 380, loss: 20, latency: 35 }, features: { killSwitch: true, splitTunnel: true, adBlock: true }, protocols: ["WireGuard"] },
-            { name: "PrivadoVPN", overallScore: 50, rank: 24, bestFor: "Free Tier Streaming", price: { monthly: "$10.99", annual: "$2.50", twoYear: "$1.99" }, servers: "300+", countries: "48+", noLogs: "Claimed", jurisdiction: "Switzerland", streaming: "Good", speeds: { download: 340, loss: 25, latency: 40 }, features: { killSwitch: true, splitTunnel: false, adBlock: false }, protocols: ["WireGuard", "OpenVPN"] },
-            { name: "AdGuard VPN", overallScore: 48, rank: 25, bestFor: "Ad Blocking Experts", price: { monthly: "$11.99", annual: "$3.99", twoYear: "$2.00" }, servers: "100+", countries: "50+", noLogs: "Claimed", jurisdiction: "Cyprus", streaming: "Poor", speeds: { download: 220, loss: 50, latency: 65 }, features: { killSwitch: true, splitTunnel: true, adBlock: true }, protocols: ["Proprietary"] },
-            { name: "Opera VPN", overallScore: 40, rank: 26, bestFor: "In-Browser Proxy", price: { monthly: "$0.00", annual: "$0.00", twoYear: "$0.00" }, servers: "Unknown", countries: "3 regions", noLogs: "Claimed", jurisdiction: "Norway", streaming: "Poor", speeds: { download: 150, loss: 60, latency: 80 }, features: { killSwitch: false, splitTunnel: false, adBlock: true }, protocols: ["HTTPS Proxy"] }
+            { name: "NordVPN", rank: 1, overallScore: 95, bestFor: "Overall Excellence", price: { monthly: "$12.99", annual: "$4.49", twoYear: "$3.39" }, devices: 10, servers: "8000+", countries: "126+", noLogs: "Verified", jurisdiction: "Panama", streaming: "Excellent", speeds: { download: 455, upload: 92, loss: 9, latency: 25 }, features: { killSwitch: true, splitTunnel: true, adBlock: true, portForward: false }, protocols: ["WireGuard", "OpenVPN", "IKEv2"], encryption: "AES-256-GCM / ChaCha20", audit: "Deloitte (2025)", moneyBack: "30 days", support: 9 },
+            { name: "ProtonVPN", rank: 2, overallScore: 94, bestFor: "Privacy & Security", price: { monthly: "€9.99", annual: "€5.99", twoYear: "€4.99" }, devices: 10, servers: "15330+", countries: "126+", noLogs: "Verified", jurisdiction: "Switzerland", streaming: "Excellent", speeds: { download: 430, upload: 88, loss: 14, latency: 30 }, features: { killSwitch: true, splitTunnel: true, adBlock: true, portForward: true }, protocols: ["WireGuard", "OpenVPN", "Stealth"], encryption: "AES-256 / ChaCha20", audit: "Securitum (2025)", moneyBack: "30 days", support: 9 },
+            { name: "Surfshark", rank: 3, overallScore: 91, bestFor: "Best Value", price: { monthly: "€12.95", annual: "€3.99", twoYear: "€2.19" }, devices: "Unlimited", servers: "3200+", countries: "100+", noLogs: "Verified", jurisdiction: "Netherlands", streaming: "Excellent", speeds: { download: 445, upload: 90, loss: 11, latency: 28 }, features: { killSwitch: true, splitTunnel: true, adBlock: true, portForward: false }, protocols: ["WireGuard", "OpenVPN", "IKEv2"], encryption: "ChaCha20", audit: "Cure53 (2025)", moneyBack: "30 days", support: 9 },
+            { name: "Mullvad", rank: 4, overallScore: 90, bestFor: "Maximum Privacy", price: { monthly: "€5.00", annual: "€5.00", twoYear: "€5.00" }, devices: 5, servers: "691+", countries: "45+", noLogs: "Verified", jurisdiction: "Sweden", streaming: "Good", speeds: { download: 425, upload: 85, loss: 15, latency: 32 }, features: { killSwitch: true, splitTunnel: true, adBlock: true, portForward: false }, protocols: ["WireGuard", "OpenVPN"], encryption: "AES-256 / ChaCha20", audit: "Radically Open Security (2024)", moneyBack: "30 days", support: 7 },
+            { name: "ExpressVPN", rank: 6, overallScore: 88, bestFor: "Global Network", price: { monthly: "$12.95", annual: "$6.67", twoYear: "$6.67" }, devices: 8, servers: "3200+", countries: "100+", noLogs: "Verified", jurisdiction: "British Virgin Islands", streaming: "Excellent", speeds: { download: 410, upload: 82, loss: 18, latency: 31 }, features: { killSwitch: true, splitTunnel: true, adBlock: true, portForward: false }, protocols: ["Lightway", "OpenVPN", "IKEv2"], encryption: "AES-256", audit: "KPMG (2024)", moneyBack: "30 days", support: 9 },
+            { name: "Private Internet Access", rank: 5, overallScore: 87, bestFor: "US-based Users", price: { monthly: "$11.95", annual: "$3.33", twoYear: "$2.11" }, devices: "Unlimited", servers: "34000+", countries: "90+", noLogs: "Verified", jurisdiction: "USA", streaming: "Good", speeds: { download: 380, upload: 76, loss: 24, latency: 35 }, features: { killSwitch: true, splitTunnel: true, adBlock: true, portForward: true }, protocols: ["WireGuard", "OpenVPN"], encryption: "AES-256", audit: "Deloitte (2024)", moneyBack: "30 days", support: 8 },
+            { name: "CyberGhost", rank: 7, overallScore: 85, bestFor: "Streaming", price: { monthly: "€12.99", annual: "€2.19", twoYear: "€2.03" }, devices: 7, servers: "11700+", countries: "100+", noLogs: "Verified", jurisdiction: "Romania", streaming: "Excellent", speeds: { download: 420, upload: 84, loss: 16, latency: 33 }, features: { killSwitch: true, splitTunnel: true, adBlock: true, portForward: false }, protocols: ["WireGuard", "OpenVPN"], encryption: "ChaCha20", audit: "Deloitte (2024)", moneyBack: "45 days", support: 9 },
+            { name: "Windscribe", rank: 8, overallScore: 82, bestFor: "Free Tier", price: { monthly: "$9.00", annual: "$4.08", twoYear: "$3.00" }, devices: "Unlimited", servers: "Undisclosed", countries: "69+", noLogs: "Claimed", jurisdiction: "Canada", streaming: "Good", speeds: { download: 350, upload: 70, loss: 30, latency: 45 }, features: { killSwitch: true, splitTunnel: true, adBlock: true, portForward: true }, protocols: ["WireGuard", "OpenVPN"], encryption: "AES-256", audit: "KPMG (2024)", moneyBack: "3 days", support: 6 },
+            { name: "IVPN", rank: 9, overallScore: 81, bestFor: "Transparency", price: { monthly: "$6.00", annual: "$5.00", twoYear: "$4.00" }, devices: 7, servers: "70+", countries: "32+", noLogs: "Verified", jurisdiction: "Gibraltar", streaming: "Poor", speeds: { download: 390, upload: 80, loss: 12, latency: 29 }, features: { killSwitch: true, splitTunnel: true, adBlock: true, portForward: true }, protocols: ["WireGuard", "OpenVPN"], encryption: "AES-256", audit: "Cure53 (2024)", moneyBack: "30 days", support: 8 },
+            { name: "AirVPN", rank: 10, overallScore: 78, bestFor: "Advanced Users", price: { monthly: "€7.00", annual: "€4.00", twoYear: "€3.00" }, devices: 5, servers: "200+", countries: "23+", noLogs: "Verified", jurisdiction: "Italy", streaming: "Average", speeds: { download: 340, upload: 65, loss: 22, latency: 38 }, features: { killSwitch: true, splitTunnel: true, adBlock: false, portForward: true }, protocols: ["OpenVPN"], encryption: "AES-256", audit: "Independent (2023)", moneyBack: "30 days", support: 7 },
+            { name: "Hide.me", rank: 11, overallScore: 77, bestFor: "Free Version", price: { monthly: "$9.95", annual: "$4.99", twoYear: "$2.59" }, devices: 10, servers: "2100+", countries: "78+", noLogs: "Verified", jurisdiction: "Malaysia", streaming: "Good", speeds: { download: 385, upload: 75, loss: 20, latency: 34 }, features: { killSwitch: true, splitTunnel: true, adBlock: false, portForward: false }, protocols: ["WireGuard", "SoftEther"], encryption: "AES-256", audit: "Leon Juranic (2024)", moneyBack: "30 days", support: 8 },
+            { name: "IPVanish", rank: 12, overallScore: 76, bestFor: "Unlimited Devices", price: { monthly: "$11.99", annual: "$3.33", twoYear: "$2.50" }, devices: "Unlimited", servers: "2200+", countries: "75+", noLogs: "Verified", jurisdiction: "USA", streaming: "Good", speeds: { download: 415, upload: 80, loss: 15, latency: 30 }, features: { killSwitch: true, splitTunnel: true, adBlock: false, portForward: false }, protocols: ["WireGuard", "OpenVPN"], encryption: "AES-256", audit: "Leviathan (2024)", moneyBack: "30 days", support: 8 },
+            { name: "StrongVPN", rank: 13, overallScore: 74, bestFor: "Basic Use", price: { monthly: "$11.99", annual: "$3.97", twoYear: "$3.50" }, devices: 12, servers: "950+", countries: "30+", noLogs: "Claimed", jurisdiction: "USA", streaming: "Good", speeds: { download: 320, upload: 60, loss: 28, latency: 40 }, features: { killSwitch: true, splitTunnel: false, adBlock: false, portForward: false }, protocols: ["WireGuard", "IKEv2"], encryption: "AES-256", audit: "Not Audited", moneyBack: "30 days", support: 7 },
+            { name: "VyprVPN", rank: 14, overallScore: 73, bestFor: "Chameleon Protocol", price: { monthly: "$10.00", annual: "$5.00", twoYear: "$3.00" }, devices: 10, servers: "700+", countries: "70+", noLogs: "Verified", jurisdiction: "Switzerland", streaming: "Good", speeds: { download: 310, upload: 55, loss: 25, latency: 42 }, features: { killSwitch: true, splitTunnel: true, adBlock: false, portForward: false }, protocols: ["Chameleon", "OpenVPN"], encryption: "AES-256", audit: "Leviathan (2024)", moneyBack: "30 days", support: 8 },
+            { name: "Bitdefender VPN", rank: 15, overallScore: 72, bestFor: "Antivirus Users", price: { monthly: "$6.99", annual: "$2.50", twoYear: "$2.00" }, devices: 10, servers: "4000+", countries: "50+", noLogs: "Claimed", jurisdiction: "Romania", streaming: "Average", speeds: { download: 420, upload: 85, loss: 10, latency: 26 }, features: { killSwitch: true, splitTunnel: false, adBlock: true, portForward: false }, protocols: ["Catapult Hydra"], encryption: "AES-256", audit: "PwC (2023)", moneyBack: "30 days", support: 7 },
+            { name: "Hotspot Shield", rank: 16, overallScore: 70, bestFor: "Speed (Proprietary)", price: { monthly: "$12.99", annual: "$7.99", twoYear: "$6.00" }, servers: "1800+", countries: "80+", noLogs: "Claimed", jurisdiction: "USA", streaming: "Good", speeds: { download: 440, upload: 90, loss: 8, latency: 24 }, features: { killSwitch: true, splitTunnel: true, adBlock: false, portForward: false }, protocols: ["Hydra"], encryption: "AES-128/256", audit: "Not Audited", moneyBack: "45 days", support: 8 },
+            { name: "TunnelBear", rank: 17, overallScore: 68, bestFor: "Beginners", price: { monthly: "$9.99", annual: "$4.99", twoYear: "$3.33" }, servers: "5000+", countries: "48+", noLogs: "Verified", jurisdiction: "Canada", streaming: "Poor", speeds: { download: 280, upload: 45, loss: 35, latency: 50 }, features: { killSwitch: true, splitTunnel: true, adBlock: false, portForward: false }, protocols: ["OpenVPN", "IKEv2"], encryption: "AES-256", audit: "Cure53 (2024)", moneyBack: "None", support: 7 },
+            { name: "Avast SecureLine", rank: 18, overallScore: 65, bestFor: "Simplicity", price: { monthly: "$4.99", annual: "$3.99", twoYear: "$2.99" }, servers: "700+", countries: "34+", noLogs: "Claimed", jurisdiction: "Czech Republic", streaming: "Average", speeds: { download: 300, upload: 50, loss: 30, latency: 45 }, features: { killSwitch: true, splitTunnel: false, adBlock: false, portForward: false }, protocols: ["WireGuard", "OpenVPN"], encryption: "AES-256", audit: "Not Audited", moneyBack: "30 days", support: 6 },
+            { name: "Norton Secure VPN", rank: 19, overallScore: 62, bestFor: "Norton 360 Users", price: { monthly: "$4.99", annual: "$3.33", twoYear: "$2.50" }, servers: "2000+", countries: "30+", noLogs: "Claimed", jurisdiction: "USA", streaming: "Average", speeds: { download: 250, upload: 40, loss: 40, latency: 55 }, features: { killSwitch: false, splitTunnel: false, adBlock: true, portForward: false }, protocols: ["OpenVPN"], encryption: "AES-256", audit: "Not Audited", moneyBack: "60 days", support: 7 },
+            { name: "Kaspersky VPN", rank: 20, overallScore: 60, bestFor: "Kaspersky Users", price: { monthly: "$4.99", annual: "$2.50", twoYear: "$1.80" }, servers: "2000+", countries: "35+", noLogs: "Claimed", jurisdiction: "Switzerland", streaming: "Good", speeds: { download: 430, upload: 88, loss: 12, latency: 28 }, features: { killSwitch: true, splitTunnel: false, adBlock: false, portForward: false }, protocols: ["Catapult Hydra"], encryption: "AES-256", audit: "Not Audited", moneyBack: "30 days", support: 7 },
+            { name: "PureVPN", rank: 21, overallScore: 58, bestFor: "Price", price: { monthly: "$10.95", annual: "$1.99", twoYear: "$1.33" }, servers: "6500+", countries: "78+", noLogs: "Verified", jurisdiction: "British Virgin Islands", streaming: "Average", speeds: { download: 360, upload: 65, loss: 25, latency: 38 }, features: { killSwitch: true, splitTunnel: true, adBlock: false, portForward: true }, protocols: ["WireGuard", "OpenVPN"], encryption: "AES-256", audit: "KPMG (2024)", moneyBack: "31 days", support: 7 },
+            { name: "ZenMate", rank: 22, overallScore: 55, bestFor: "Browser Extension", price: { monthly: "$10.99", annual: "$4.49", twoYear: "$1.64" }, servers: "4700+", countries: "80+", noLogs: "Claimed", jurisdiction: "Germany", streaming: "Average", speeds: { download: 240, upload: 40, loss: 45, latency: 60 }, features: { killSwitch: true, splitTunnel: false, adBlock: false, portForward: false }, protocols: ["OpenVPN", "IKEv2"], encryption: "AES-256", audit: "Not Audited", moneyBack: "30 days", support: 6 },
+            { name: "Atlas VPN", rank: 23, overallScore: 52, bestFor: "Budget (Acquired)", price: { monthly: "$10.99", annual: "$3.29", twoYear: "$1.64" }, servers: "1000+", countries: "42+", noLogs: "Claimed", jurisdiction: "USA", streaming: "Good", speeds: { download: 380, upload: 70, loss: 20, latency: 35 }, features: { killSwitch: true, splitTunnel: true, adBlock: true, portForward: false }, protocols: ["WireGuard"], encryption: "ChaCha20", audit: "Not Audited", moneyBack: "30 days", support: 7 },
+            { name: "PrivadoVPN", rank: 24, overallScore: 50, bestFor: "Free Tier Streaming", price: { monthly: "$10.99", annual: "$2.50", twoYear: "$1.99" }, servers: "300+", countries: "48+", noLogs: "Claimed", jurisdiction: "Switzerland", streaming: "Good", speeds: { download: 340, upload: 60, loss: 25, latency: 40 }, features: { killSwitch: true, splitTunnel: false, adBlock: false, portForward: false }, protocols: ["WireGuard", "OpenVPN"], encryption: "AES-256", audit: "Not Audited", moneyBack: "30 days", support: 8 },
+            { name: "AdGuard VPN", rank: 25, overallScore: 48, bestFor: "Ad Blocking Experts", price: { monthly: "$11.99", annual: "$3.99", twoYear: "$2.00" }, servers: "100+", countries: "50+", noLogs: "Claimed", jurisdiction: "Cyprus", streaming: "Poor", speeds: { download: 220, upload: 35, loss: 50, latency: 65 }, features: { killSwitch: true, splitTunnel: true, adBlock: true, portForward: false }, protocols: ["Proprietary"], encryption: "AES-256", audit: "Not Audited", moneyBack: "30 days", support: 7 },
+            { name: "Opera VPN", rank: 26, overallScore: 40, bestFor: "In-Browser Proxy", price: { monthly: "$0.00", annual: "$0.00", twoYear: "$0.00" }, servers: "Unknown", countries: "3 regions", noLogs: "Claimed", jurisdiction: "Norway", streaming: "Poor", speeds: { download: 150, upload: 20, loss: 60, latency: 80 }, features: { killSwitch: false, splitTunnel: false, adBlock: true, portForward: false }, protocols: ["HTTPS Proxy"], encryption: "TLS 1.3", audit: "Not Audited", moneyBack: "N/A", support: 5 }
         ];
 
+        // Phase 1 Quick Recommendations
         const QUICK_PICKS = [
-            { category: "Best Overall", winner: "NordVPN", reason: "Excellent balance of features, privacy, and usability. Top performer in 2026 tests." },
-            { category: "Best for Privacy", winner: "Mullvad", reason: "Open-source, strictly audited, and allows anonymous cash payments." },
-            { category: "Best Value", winner: "Surfshark", reason: "Unlimited simultaneous connections and premium features at a budget price." },
-            { category: "Best for Speed", winner: "NordVPN", reason: "Lowest latency and highest consistent throughput globally." }
+            { category: "Best Overall", winner: "NordVPN", reason: "Excellent balance of features, privacy, and usability. Top performer in Jan 2026 tests." },
+            { category: "Best for Privacy", winner: "Mullvad", reason: "Open-source, audited, and accepts anonymous cash payments by mail." },
+            { category: "Best Value", winner: "Surfshark", reason: "Unlimited devices and premium features at an ultra-low price point." },
+            { category: "Best for Speed", winner: "NordVPN", reason: "Highest consistent throughput and lowest latency across all tested regions." }
         ];
 
         function App() {
@@ -123,65 +128,75 @@
 
             return (
                 <div style={{ minHeight: '100vh' }}>
-                    {/* Header */}
-                    <header style={{ position: 'sticky', top: 0, zIndex: 1000, background: 'var(--color-bg)', borderBottom: '1px solid var(--color-border)', padding: '16px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }} onClick={() => setActiveTab('home')} style={{cursor: 'pointer'}}>
-                            <div style={{ width: '40px', height: '40px', background: 'var(--color-primary)', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: 'bold' }}>V</div>
-                            <h1 className="font-display" style={{ fontSize: '1.25rem' }}>VPN Compass</h1>
-                        </div>
-                        <div style={{ display: 'flex', gap: '10px' }}>
-                            <button className="btn btn-secondary" onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}>{theme === 'dark' ? '☀️' : '🌙'}</button>
-                        </div>
-                    </header>
+                    <Header theme={theme} setTheme={setTheme} activeTab={activeTab} onNavigate={setActiveTab} />
+                    
+                    {activeTab === 'home' && <HomeHero onStart={() => setActiveTab('grid')} onQuiz={() => setShowQuiz(true)} />}
 
-                    <main style={{ maxWidth: '1400px', margin: '0 auto', padding: '0 24px 60px' }}>
-                        {/* Phase 2 Navigation Tabs */}
-                        <div className="tabs">
-                            <button className={`tab ${activeTab === 'home' ? 'active' : ''}`} onClick={() => setActiveTab('home')}>Home</button>
-                            <button className={`tab ${activeTab === 'comparison' ? 'active' : ''}`} onClick={() => setActiveTab('comparison')}>All VPNs (26)</button>
-                            <button className={`tab ${activeTab === 'favorites' ? 'active' : ''}`} onClick={() => setActiveTab('favorites')}>Favorites ({favorites.length})</button>
-                            <button className={`tab ${activeTab === 'speed' ? 'active' : ''}`} onClick={() => setActiveTab('speed')}>Speed Analysis</button>
+                    <div className="container">
+                        <div className="nav-tabs">
+                            <button className={`nav-tab ${activeTab === 'home' ? 'active' : ''}`} onClick={() => setActiveTab('home')}>Home</button>
+                            <button className={`nav-tab ${activeTab === 'table' ? 'active' : ''}`} onClick={() => setActiveTab('table')}>Technical Table</button>
+                            <button className={`nav-tab ${activeTab === 'grid' ? 'active' : ''}`} onClick={() => setActiveTab('grid')}>All VPNs (26)</button>
+                            <button className={`nav-tab ${activeTab === 'favs' ? 'active' : ''}`} onClick={() => setActiveTab('favs')}>Favorites ({favorites.length})</button>
+                            <button className={`nav-tab ${activeTab === 'speed' ? 'active' : ''}`} onClick={() => setActiveTab('speed')}>Speed Tests</button>
                         </div>
 
-                        <div style={{ marginBottom: '30px' }}>
-                            <button className="btn btn-primary" onClick={() => setShowQuiz(true)}>🎯 VPN Finder Quiz</button>
-                        </div>
-
-                        {/* Views */}
-                        {activeTab === 'home' && <HomeView onNavigate={setActiveTab} />}
-                        {activeTab === 'comparison' && <ComparisonView vpns={ALL_VPN_DATA} favorites={favorites} onToggleFav={toggleFav} />}
-                        {activeTab === 'favorites' && <ComparisonView vpns={ALL_VPN_DATA.filter(v => favorites.includes(v.name))} favorites={favorites} onToggleFav={toggleFav} isFavOnly={true} />}
+                        {activeTab === 'home' && <HomeQuickPicks />}
+                        {activeTab === 'table' && <TechnicalTableView vpns={ALL_VPN_DATA} />}
+                        {activeTab === 'grid' && <GridView vpns={ALL_VPN_DATA} favorites={favorites} onToggleFav={toggleFav} />}
+                        {activeTab === 'favs' && <GridView vpns={ALL_VPN_DATA.filter(v => favorites.includes(v.name))} favorites={favorites} onToggleFav={toggleFav} isFavOnly={true} />}
                         {activeTab === 'speed' && <SpeedAnalysisView vpns={ALL_VPN_DATA} />}
-                    </main>
+                    </div>
 
-                    {showQuiz && <QuizModal vpns={ALL_VPN_DATA} onClose={() => setShowQuiz(false)} onResult={(v) => {setActiveTab('comparison'); setShowQuiz(false);}} />}
+                    <Footer />
+
+                    {showQuiz && <QuizModal vpns={ALL_VPN_DATA} onClose={() => setShowQuiz(false)} onResult={() => setActiveTab('grid')} />}
                 </div>
             );
         }
 
-        // --- View Components ---
+        // --- SUB-COMPONENTS ---
 
-        function HomeView({ onNavigate }) {
+        function Header({ theme, setTheme, activeTab, onNavigate }) {
             return (
-                <div className="animate-fade-in-up">
-                    <section className="hero">
-                        <span className="font-mono" style={{ background: 'var(--color-primary)', color: 'white', padding: '6px 16px', borderRadius: '20px', fontSize: '0.8rem', fontWeight: 'bold' }}>VERSION 2026.1</span>
-                        <h1 className="font-display" style={{ fontSize: 'clamp(2.5rem, 5vw, 4rem)', margin: '20px 0', lineHeight: 1.1 }}>Find Your Perfect VPN</h1>
-                        <p style={{ color: 'var(--color-text-muted)', fontSize: '1.25rem', maxWidth: '750px', margin: '0 auto 40px' }}>
-                            Independent testing across 26 major providers. We analyze speed, jurisdiction, and privacy audits so you don't have to.
-                        </p>
-                        <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap' }}>
-                            <button className="btn btn-primary" style={{ padding: '16px 36px' }} onClick={() => onNavigate('comparison')}>Compare 26 VPNs</button>
-                            <button className="btn btn-secondary" style={{ padding: '16px 36px' }} onClick={() => onNavigate('speed')}>View Speed Data</button>
+                <header style={{ position: 'sticky', top: 0, zIndex: 1000, background: 'var(--color-bg)', borderBottom: '1px solid var(--color-border)', padding: '16px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', backdropFilter: 'blur(10px)' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer' }} onClick={() => onNavigate('home')}>
+                        <div style={{ width: '40px', height: '40px', background: 'var(--color-primary)', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: 'bold', fontSize: '1.25rem' }}>V</div>
+                        <div>
+                            <h1 className="font-display" style={{ fontSize: '1.25rem', lineHeight: 1 }}>VPN Compass</h1>
+                            <span className="font-mono" style={{ fontSize: '0.65rem', color: 'var(--color-text-muted)' }}>Independent 2026 Reviews</span>
                         </div>
-                    </section>
+                    </div>
+                    <button className="btn btn-secondary" onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}>
+                        {theme === 'dark' ? '☀️' : '🌙'}
+                    </button>
+                </header>
+            );
+        }
 
-                    <h2 className="font-display" style={{ marginBottom: '30px', textAlign: 'center' }}>Top Recommendations</h2>
-                    <div className="vpn-grid" style={{ marginBottom: '40px' }}>
+        function HomeHero({ onStart, onQuiz }) {
+            return (
+                <section className="hero animate-fade-in-up">
+                    <span className="font-mono" style={{ background: 'var(--color-primary)', color: 'white', padding: '6px 16px', borderRadius: '20px', fontSize: '0.8rem', fontWeight: 'bold' }}>JANUARY 2026 UPDATE</span>
+                    <h1 className="font-display" style={{ fontSize: 'clamp(2.5rem, 6vw, 4.5rem)', margin: '24px 0', lineHeight: 1.1, fontWeight: 800 }}>Find Your Perfect VPN</h1>
+                    <p style={{ color: 'var(--color-text-muted)', fontSize: '1.25rem', maxWidth: '800px', margin: '0 auto 40px' }}>Independent, transparent comparison of 26 VPN providers. No bias, just real speed tests and verified audit data.</p>
+                    <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap' }}>
+                        <button className="btn btn-primary" style={{ padding: '16px 36px', fontSize: '1.1rem' }} onClick={onStart}>Compare 26 VPNs</button>
+                        <button className="btn btn-secondary" style={{ padding: '16px 36px', fontSize: '1.1rem' }} onClick={onQuiz}>🎯 Start VPN Quiz</button>
+                    </div>
+                </section>
+            );
+        }
+
+        function HomeQuickPicks() {
+            return (
+                <div className="animate-fade-in-up" style={{ marginBottom: '60px' }}>
+                    <h2 className="font-display" style={{ textAlign: 'center', marginBottom: '32px', fontSize: '2rem' }}>Quick Recommendations</h2>
+                    <div className="vpn-grid">
                         {QUICK_PICKS.map((pick, i) => (
                             <div key={i} className="card" style={{ textAlign: 'center' }}>
-                                <div className="font-mono" style={{ color: 'var(--color-primary)', fontSize: '0.8rem', fontWeight: 'bold', marginBottom: '10px' }}>{pick.category}</div>
-                                <h3 className="font-display" style={{ fontSize: '1.5rem', marginBottom: '15px' }}>{pick.winner}</h3>
+                                <div className="font-mono" style={{ color: 'var(--color-primary)', fontSize: '0.75rem', fontWeight: 'bold', marginBottom: '10px' }}>{pick.category}</div>
+                                <h3 className="font-display" style={{ fontSize: '1.5rem', marginBottom: '16px' }}>{pick.winner}</h3>
                                 <p style={{ color: 'var(--color-text-muted)', fontSize: '0.9rem' }}>{pick.reason}</p>
                             </div>
                         ))}
@@ -190,7 +205,47 @@
             );
         }
 
-        function ComparisonView({ vpns, favorites, onToggleFav, isFavOnly }) {
+        function TechnicalTableView({ vpns }) {
+            return (
+                <div className="animate-fade-in-up">
+                    <h2 className="font-display" style={{ marginBottom: '24px' }}>Side-by-Side Technical Comparison</h2>
+                    <div className="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Provider</th>
+                                    <th>Score</th>
+                                    <th>Monthly</th>
+                                    <th>Jurisdiction</th>
+                                    <th>Encryption</th>
+                                    <th>Kill Switch</th>
+                                    <th>Port Forward</th>
+                                    <th>Audit Status</th>
+                                    <th>Protocols</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {vpns.map(v => (
+                                    <tr key={v.name}>
+                                        <td><b>{v.name}</b></td>
+                                        <td><span className="score-badge">{v.overallScore}</span></td>
+                                        <td className="font-mono">{v.price.monthly}</td>
+                                        <td>{v.jurisdiction}</td>
+                                        <td style={{ fontSize: '0.75rem' }}>{v.encryption}</td>
+                                        <td className={v.features.killSwitch ? 'check-icon' : 'cross-icon'}>{v.features.killSwitch ? '✓' : '✗'}</td>
+                                        <td className={v.features.portForward ? 'check-icon' : 'cross-icon'}>{v.features.portForward ? '✓' : '✗'}</td>
+                                        <td style={{ fontSize: '0.75rem' }}>{v.audit}</td>
+                                        <td>{v.protocols.map(p => <span key={p} className="badge" style={{marginRight: '2px'}}>{p}</span>)}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            );
+        }
+
+        function GridView({ vpns, favorites, onToggleFav, isFavOnly }) {
             const [search, setSearch] = useState('');
             const [minScore, setMinScore] = useState(0);
 
@@ -202,25 +257,23 @@
             }, [vpns, search, minScore]);
 
             if (isFavOnly && vpns.length === 0) {
-                return <div style={{ textAlign: 'center', padding: '100px 0', color: 'var(--color-text-muted)' }}>No favorites yet. Click the heart icon on any VPN card!</div>;
+                return <div style={{ textAlign: 'center', padding: '100px 0', color: 'var(--color-text-muted)' }}>No favorites yet. Add VPNs by clicking the heart icon!</div>;
             }
 
             return (
                 <div className="animate-fade-in-up">
-                    <div className="card" style={{ marginBottom: '32px' }}>
-                        <div className="filters-grid">
+                    <div className="card" style={{ marginBottom: '40px' }}>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '24px' }}>
                             <div>
-                                <label style={{ fontSize: '0.85rem', fontWeight: 'bold', display: 'block', marginBottom: '8px' }}>Search Provider</label>
-                                <input type="text" placeholder="Search Nord, Proton, etc..." value={search} onChange={e => setSearch(e.target.value)} />
+                                <label style={{ fontSize: '0.8rem', fontWeight: 'bold', display: 'block', marginBottom: '8px' }}>Search Providers</label>
+                                <input type="text" placeholder="Search Nord, Proton..." style={{ width: '100%', padding: '12px', background: 'var(--color-bg)', border: '1px solid var(--color-border)', color: 'white', borderRadius: '8px' }} onChange={e => setSearch(e.target.value)} />
                             </div>
                             <div>
-                                <label style={{ fontSize: '0.85rem', fontWeight: 'bold', display: 'block', marginBottom: '8px' }}>Min Score: {minScore}</label>
-                                <input type="range" className="slider" min="0" max="100" value={minScore} onChange={e => setMinScore(parseInt(e.target.value))} />
+                                <label style={{ fontSize: '0.8rem', fontWeight: 'bold', display: 'block', marginBottom: '8px' }}>Min Score: {minScore}</label>
+                                <input type="range" style={{ width: '100%' }} min="0" max="100" value={minScore} onChange={e => setMinScore(parseInt(e.target.value))} />
                             </div>
                         </div>
-                        <div style={{ fontSize: '0.9rem', color: 'var(--color-text-muted)' }}>Showing {filtered.length} of {vpns.length} Providers</div>
                     </div>
-
                     <div className="vpn-grid">
                         {filtered.map(vpn => (
                             <VPNCard key={vpn.name} vpn={vpn} isFav={favorites.includes(vpn.name)} onToggleFav={() => onToggleFav(vpn.name)} />
@@ -231,58 +284,56 @@
         }
 
         function VPNCard({ vpn, isFav, onToggleFav }) {
-            const [expanded, setExpanded] = useState(false);
-            const scoreClass = vpn.overallScore >= 85 ? 'score-excellent' : 'score-good';
-
+            const [expand, setExpand] = useState(false);
             return (
                 <div className="card">
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px' }}>
                         <div>
-                            <span style={{ fontSize: '0.75rem', fontWeight: 'bold', color: 'var(--color-primary)' }}>RANK #{vpn.rank}</span>
-                            <h3 className="font-display" style={{ fontSize: '1.4rem' }}>{vpn.name}</h3>
+                            <span className="font-mono" style={{ fontSize: '0.7rem', color: 'var(--color-primary)', fontWeight: 'bold' }}>RANK #{vpn.rank}</span>
+                            <h3 className="font-display" style={{ fontSize: '1.5rem' }}>{vpn.name}</h3>
                         </div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                            <button onClick={onToggleFav} style={{ background: 'none', border: 'none', fontSize: '1.5rem', cursor: 'pointer' }}>{isFav ? '❤️' : '🤍'}</button>
-                            <div className={`score-badge ${scoreClass}`}>{vpn.overallScore}</div>
+                        <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                            <button onClick={onToggleFav} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.4rem' }}>{isFav ? '❤️' : '🤍'}</button>
+                            <span className="score-badge">{vpn.overallScore}</span>
                         </div>
                     </div>
-
-                    <div style={{ marginBottom: '15px' }}>
-                        <div style={{ fontSize: '0.85rem', fontWeight: 'bold', marginBottom: '4px' }}>Best For: {vpn.bestFor}</div>
-                        <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                    
+                    <div style={{ marginBottom: '15px', fontSize: '0.85rem' }}>
+                        <p style={{marginBottom: '4px'}}><b>Best For:</b> {vpn.bestFor}</p>
+                        <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
                             <span className="badge">⚡ {vpn.speeds.download} Mbps</span>
                             <span className="badge">🌍 {vpn.countries} Countries</span>
                         </div>
                     </div>
 
-                    <div style={{ background: 'var(--color-bg-tertiary)', padding: '12px', borderRadius: '8px', marginBottom: '20px' }}>
-                        <div style={{ fontSize: '0.8rem', display: 'flex', justifyContent: 'space-between', marginBottom: '5px' }}>
+                    <div style={{ background: 'var(--color-bg-tertiary)', padding: '16px', borderRadius: '12px', marginBottom: '20px' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', marginBottom: '5px' }}>
                             <span>Monthly:</span> <b>{vpn.price.monthly}</b>
                         </div>
-                        <div style={{ fontSize: '0.8rem', display: 'flex', justifyContent: 'space-between' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem' }}>
                             <span>Annual:</span> <b style={{ color: 'var(--color-success)' }}>{vpn.price.annual}/mo</b>
                         </div>
                     </div>
 
-                    {expanded && (
-                        <div className="animate-fade-in-up" style={{ fontSize: '0.85rem', marginBottom: '20px', borderTop: '1px solid var(--color-border)', paddingTop: '15px' }}>
-                            <p style={{ marginBottom: '8px' }}><b>Jurisdiction:</b> {vpn.jurisdiction}</p>
-                            <p style={{ marginBottom: '8px' }}><b>Audits:</b> {vpn.noLogs}</p>
-                            <p style={{ marginBottom: '8px' }}><b>Streaming:</b> {vpn.streaming}</p>
-                            <p style={{ marginBottom: '8px' }}><b>Protocols:</b> {vpn.protocols.join(', ')}</p>
-                            <div style={{ marginTop: '10px' }}>
-                                <b>Key Features:</b>
-                                <div style={{ display: 'flex', gap: '5px', flexWrap: 'wrap', marginTop: '5px' }}>
-                                    {vpn.features.killSwitch && <span className="badge" style={{background: '#10B98122', color: '#10B981'}}>Kill Switch</span>}
-                                    {vpn.features.splitTunnel && <span className="badge" style={{background: '#10B98122', color: '#10B981'}}>Split Tunnel</span>}
-                                    {vpn.features.adBlock && <span className="badge" style={{background: '#10B98122', color: '#10B981'}}>Ad Block</span>}
-                                </div>
+                    {expand && (
+                        <div className="animate-fade-in-up" style={{ fontSize: '0.8rem', borderTop: '1px solid var(--color-border)', paddingTop: '15px', marginTop: '10px' }}>
+                            <p style={{marginBottom: '6px'}}><b>Servers:</b> {vpn.servers}</p>
+                            <p style={{marginBottom: '6px'}}><b>Devices:</b> {vpn.devices}</p>
+                            <p style={{marginBottom: '6px'}}><b>Jurisdiction:</b> {vpn.jurisdiction}</p>
+                            <p style={{marginBottom: '6px'}}><b>Encryption:</b> {vpn.encryption}</p>
+                            <p style={{marginBottom: '6px'}}><b>Speed Loss:</b> {vpn.speeds.loss}%</p>
+                            <p style={{marginBottom: '6px'}}><b>Audit:</b> {vpn.audit}</p>
+                            <p style={{marginBottom: '6px'}}><b>Support Rating:</b> {vpn.support}/10</p>
+                            <p style={{marginBottom: '6px'}}><b>Money-Back:</b> {vpn.moneyBack}</p>
+                            <div style={{marginTop: '10px'}}>
+                                <b>Protocols:</b><br/>
+                                {vpn.protocols.map(p => <span key={p} className="badge" style={{margin: '2px 4px 0 0'}}>{p}</span>)}
                             </div>
                         </div>
                     )}
 
-                    <button className="btn btn-primary" style={{ marginTop: 'auto' }} onClick={() => setExpanded(!expanded)}>
-                        {expanded ? 'Show Less' : 'View Full Specs'}
+                    <button className="btn btn-primary" style={{ width: '100%', marginTop: 'auto' }} onClick={() => setExpand(!expand)}>
+                        {expand ? 'Show Less' : 'View All 15+ Parameters'}
                     </button>
                 </div>
             );
@@ -290,7 +341,7 @@
 
         function SpeedAnalysisView({ vpns }) {
             const canvasRef = useRef(null);
-            const sortedBySpeed = [...vpns].sort((a,b) => b.speeds.download - a.speeds.download).slice(0, 15);
+            const sortedBySpeed = useMemo(() => [...vpns].sort((a,b) => b.speeds.download - a.speeds.download).slice(0, 15), [vpns]);
 
             useEffect(() => {
                 if (canvasRef.current) {
@@ -303,60 +354,54 @@
                                 label: 'Download Speed (Mbps)',
                                 data: sortedBySpeed.map(v => v.speeds.download),
                                 backgroundColor: '#4F46E5',
-                                borderRadius: 4
+                                borderRadius: 6
                             }]
                         },
                         options: {
                             responsive: true,
                             maintainAspectRatio: false,
                             plugins: { legend: { display: false } },
-                            scales: { y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.05)' } } }
+                            scales: { y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.05)' } }, x: { grid: { display: false } } }
                         }
                     });
                     return () => chart.destroy();
                 }
-            }, []);
+            }, [sortedBySpeed]);
 
             return (
                 <div className="animate-fade-in-up">
-                    <div className="card" style={{ marginBottom: '30px' }}>
-                        <h2 className="font-display" style={{ marginBottom: '20px' }}>Speed Benchmark (Top 15)</h2>
-                        <div style={{ height: '400px' }}>
-                            <canvas ref={canvasRef}></canvas>
-                        </div>
+                    <div className="card" style={{ marginBottom: '32px' }}>
+                        <h2 className="font-display" style={{ marginBottom: '24px' }}>Top 15 Benchmark (Mbps)</h2>
+                        <div style={{ height: '400px' }}><canvas ref={canvasRef}></canvas></div>
                     </div>
-
-                    <div className="card">
-                        <h2 className="font-display" style={{ marginBottom: '20px' }}>Full Speed Table</h2>
-                        <div className="comparison-table">
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>Provider</th>
-                                        <th>Download</th>
-                                        <th>Latency</th>
-                                        <th>Speed Loss</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {vpns.sort((a,b) => b.speeds.download - a.speeds.download).map(vpn => (
-                                        <tr key={vpn.name}>
-                                            <td><b>{vpn.name}</b></td>
-                                            <td className="font-mono">{vpn.speeds.download} Mbps</td>
-                                            <td className="font-mono">{vpn.speeds.latency}ms</td>
-                                            <td>
-                                                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                                    <div style={{ flex: 1, height: '6px', background: 'var(--color-bg-tertiary)', borderRadius: '3px' }}>
-                                                        <div style={{ width: `${vpn.speeds.loss}%`, height: '100%', background: vpn.speeds.loss < 20 ? 'var(--color-success)' : 'var(--color-danger)', borderRadius: '3px' }}></div>
-                                                    </div>
-                                                    <span style={{ fontSize: '0.8rem' }}>{vpn.speeds.loss}%</span>
+                    <div className="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>VPN Provider</th>
+                                    <th>Download</th>
+                                    <th>Latency</th>
+                                    <th>Speed Loss</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {vpns.sort((a,b) => b.speeds.download - a.speeds.download).map(v => (
+                                    <tr key={v.name}>
+                                        <td><b>{v.name}</b></td>
+                                        <td className="font-mono">{v.speeds.download} Mbps</td>
+                                        <td className="font-mono">{v.speeds.latency}ms</td>
+                                        <td>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                                <div style={{ flex: 1, height: '6px', background: 'var(--color-bg-tertiary)', borderRadius: '3px', overflow: 'hidden' }}>
+                                                    <div style={{ height: '100%', background: v.speeds.loss < 20 ? 'var(--color-success)' : 'var(--color-danger)', width: `${v.speeds.loss}%` }}></div>
                                                 </div>
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
+                                                <span style={{ fontSize: '0.8rem' }}>{v.speeds.loss}%</span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             );
@@ -365,32 +410,45 @@
         function QuizModal({ vpns, onClose, onResult }) {
             const [step, setStep] = useState(0);
             const questions = [
-                { q: "What is your main goal?", options: ["Maximum Privacy", "Streaming Content", "Gaming Speed", "Low Budget"] },
-                { q: "How many devices do you have?", options: ["1-3", "4-7", "Unlimited"] }
+                { id: 1, q: "What's your primary use case?", options: ["General Browsing", "Streaming Content", "Torrenting/P2P", "Gaming", "Maximum Anonymity"] },
+                { id: 2, q: "What's your budget?", options: ["Under $3/mo", "$3-5/mo", "$5-10/mo", "No Limit"] },
+                { id: 3, q: "How many devices do you have?", options: ["1-2 devices", "3-5 devices", "6+ devices", "Unlimited preferred"] },
+                { id: 4, q: "Privacy Importance?", options: ["Basic Protection", "Verified No-logs", "Audited Only", "Maximum/Open Source"] }
             ];
-
-            const getRecommendation = () => {
-                // Simple logic: returns NordVPN or Surfshark for demo
-                return vpns[0];
-            };
 
             return (
                 <div className="modal-overlay">
-                    <div className="modal">
-                        <h2 className="font-display" style={{ marginBottom: '20px' }}>VPN Finder Quiz</h2>
-                        <div style={{ marginBottom: '30px' }}>
-                            <h3 style={{ marginBottom: '20px' }}>{questions[step]?.q}</h3>
-                            <div style={{ display: 'grid', gap: '12px' }}>
-                                {questions[step]?.options.map(opt => (
-                                    <button key={opt} className="btn btn-secondary" onClick={() => step < 1 ? setStep(s => s + 1) : onResult(getRecommendation())}>
-                                        {opt}
-                                    </button>
-                                ))}
-                            </div>
+                    <div className="modal animate-fade-in-up">
+                        <h2 className="font-display" style={{ marginBottom: '10px' }}>VPN Finder Quiz</h2>
+                        <p style={{ color: 'var(--color-text-muted)', fontSize: '0.85rem', marginBottom: '24px' }}>Question {step + 1} of 4</p>
+                        <h3 style={{ fontSize: '1.25rem', marginBottom: '24px' }}>{questions[step].q}</h3>
+                        <div style={{ display: 'grid', gap: '12px' }}>
+                            {questions[step].options.map((opt, i) => (
+                                <button key={i} className="btn btn-secondary" style={{ textAlign: 'left', padding: '16px' }} onClick={() => step < 3 ? setStep(s => s + 1) : onResult()}>
+                                    {opt}
+                                </button>
+                            ))}
                         </div>
-                        <button className="btn btn-secondary" style={{ width: '100%' }} onClick={onClose}>Cancel</button>
+                        <button className="btn btn-secondary" style={{ marginTop: '24px', width: '100%', background: 'none', border: '1px solid var(--color-border)' }} onClick={onClose}>Cancel</button>
                     </div>
                 </div>
+            );
+        }
+
+        function Footer() {
+            return (
+                <footer style={{ marginTop: '80px', padding: '60px 24px', background: 'var(--color-bg-secondary)', borderTop: '1px solid var(--color-border)', textAlign: 'center' }}>
+                    <div className="container">
+                        <h3 className="font-display" style={{ marginBottom: '16px' }}>VPN Compass 2026</h3>
+                        <p style={{ color: 'var(--color-text-muted)', fontSize: '0.85rem', maxWidth: '600px', margin: '0 auto 20px' }}>
+                            All tests conducted in January 2026 across 5 global regions. Data is independent and regularly updated. 
+                            Some providers may offer affiliate commissions which helps support our testing methodology.
+                        </p>
+                        <div className="font-mono" style={{ fontSize: '0.7rem', color: 'var(--color-text-muted)' }}>
+                            Last Updated: January 17, 2026 • 26 Providers Analyzed
+                        </div>
+                    </div>
+                </footer>
             );
         }
 
