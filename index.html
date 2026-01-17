@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VPN Compass 2026 // Network Intelligence</title>
+    <title>VPN EXPLORER 2026 // Network Intelligence</title>
     
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
@@ -409,7 +409,7 @@
             const [activeCategory, setActiveCategory] = useState('home');
             const [activeTab, setActiveTab] = useState('dashboard');
             const [filters, setFilters] = useState({ audited: false, wireguard: false, cheap: false, streaming: false });
-            const [favorites, setFavorites] = useState(() => JSON.parse(localStorage.getItem('vpn_compass_favs') || '[]'));
+            const [favorites, setFavorites] = useState(() => JSON.parse(localStorage.getItem('vpn_explorer_favs') || '[]'));
             const [theme, setTheme] = useState('dark');
             const [highlighted, setHighlighted] = useState(null);
             const [showMethodology, setShowMethodology] = useState(false);
@@ -420,7 +420,7 @@
             const toggleFav = (name) => {
                 const newFavs = favorites.includes(name) ? favorites.filter(n => n !== name) : [...favorites, name];
                 setFavorites(newFavs);
-                localStorage.setItem('vpn_compass_favs', JSON.stringify(newFavs));
+                localStorage.setItem('vpn_explorer_favs', JSON.stringify(newFavs));
             };
 
             const toggleFilter = (key) => setFilters(f => ({ ...f, [key]: !f[key] }));
@@ -495,7 +495,7 @@
                 <header className="cyber-header">
                     <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
                         <div style={{ width: '40px', height: '40px', background: 'var(--text-primary)', color: 'var(--bg-deep)', display: 'grid', placeItems: 'center', fontWeight: 'bold', fontSize: '1.5rem', fontFamily: 'var(--font-display)' }}>V</div>
-                        <div><h1 className="font-display" style={{ fontSize: '1.2rem', lineHeight: 1 }}>VPN Compass</h1></div>
+                        <div><h1 className="font-display" style={{ fontSize: '1.2rem', lineHeight: 1 }}>VPN Explorer</h1></div>
                     </div>
                 </header>
             );
@@ -813,7 +813,7 @@
         function Footer({ onMethodology }) {
             return (
                 <footer style={{ borderTop: '1px solid var(--border-dim)', padding: '40px 24px', textAlign: 'center', color: 'var(--text-secondary)' }}>
-                    <div className="font-display" style={{ marginBottom: '16px' }}>VPN COMPASS // 2026</div>
+                    <div className="font-display" style={{ marginBottom: '16px' }}>VPN EXPLORER // 2026</div>
                     <div className="font-mono" style={{ fontSize: '0.75rem' }}>DATA VERIFIED INDEPENDENTLY.<br/><button onClick={onMethodology} style={{background:'none', border:'none', color:'var(--accent-acid)', cursor:'pointer', textDecoration:'underline', fontSize:'0.7rem'}}>VIEW METHODOLOGY</button></div>
                 </footer>
             );
