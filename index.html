@@ -8,7 +8,6 @@
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Manrope:wght@300;400;600;800&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
@@ -37,18 +36,6 @@
             --font-mono: 'JetBrains Mono', monospace;
 
             --ease-snap: cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        [data-theme="light"] {
-            --bg-deep: #F0F2F5;
-            --bg-panel: #FFFFFF;
-            --bg-surface: #F7F9FC;
-            --border-dim: #E2E8F0;
-            --border-bright: #CBD5E1;
-            --text-primary: #0F172A;
-            --text-secondary: #64748B;
-            --accent-acid: #4F46E5; 
-            --accent-cyan: #06B6D4;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-font-smoothing: antialiased; }
@@ -227,7 +214,7 @@
         }
         .hero-search-icon {
             position: absolute; right: 20px; top: 50%; transform: translateY(-50%);
-            color: var(--accent-acid); font-size: 1.2rem;
+            color: var(--accent-acid); font-size: 1.2rem; background: none; border: none; cursor: pointer;
         }
 
         /* SPEED CHART STYLES (Cyber Style) */
@@ -472,7 +459,7 @@
                 setActiveCategory('all');
             };
 
-            // NETWORK TOOLS LOGIC
+            // NETWORK TOOLS LOGIC (Manual Trigger Only)
             const runIpScan = () => {
                 setIpData({ ip: 'Scanning...', isp: '...' });
                 setTimeout(() => {
@@ -548,12 +535,17 @@
             );
         }
 
+        // --- ROW COMPONENT (Moved out for performance) ---
+        const Row = ({label, val}) => (
+            <div className="detail-row">
+                <span className="detail-label">{label}</span>
+                <span className="detail-val" style={{color: val === '✓' ? 'var(--accent-win)' : 'inherit'}}>{val}</span>
+            </div>
+        );
+
         // --- LAYER 1: HOMEPAGE ---
         function HomeLayer({ onNavigate, vpns, onSearch, onTopPickClick, ipData, runIpScan, dnsStatus, runDnsScan }) {
             const [localSearch, setLocalSearch] = useState('');
-
-            // Auto-run IP scan on mount
-            useEffect(() => { runIpScan(); }, []);
 
             const handleSearchSubmit = (e) => {
                 e.preventDefault();
@@ -591,7 +583,7 @@
                                     </div>
                                     <div className="diag-result-row"><span>Status</span> <span style={{color:'var(--accent-danger)'}}>Visible</span></div>
                                     <div className="diag-result-row"><span>ISP</span> <span>{ipData.isp}</span></div>
-                                    <button className="diag-btn" style={{marginTop:'auto'}} onClick={runIpScan}>REFRESH SCAN</button>
+                                    <button className="diag-btn" style={{marginTop:'auto'}} onClick={runIpScan}>SCAN NOW</button>
                                 </div>
                                 <div className="diag-card">
                                     <div className="diag-title">🔒 DNS LEAK TEST</div>
@@ -646,9 +638,6 @@
             );
         }
 
-        // ... [REST OF COMPONENTS: UseCaseLayer, VPNCard, etc. REMAIN SAME AS PREVIOUS VERSION] ...
-        // (I will repeat them here for the full copy-paste file to ensure completeness)
-
         function UseCaseCard({ icon, title, desc, onClick }) {
             return (
                 <div className="use-case-card" onClick={onClick}>
@@ -663,23 +652,29 @@
             );
         }
 
+        // --- LAYER 2: USE CASE / GRID LAYER ---
         function UseCaseLayer({ category, onBack, vpns, filters, toggleFilter, favorites, toggleFav, searchQuery, setSearchQuery, highlighted }) {
             const filtered = useMemo(() => {
                 let list = vpns;
                 if (searchQuery) list = list.filter(v => v.name.toLowerCase().includes(searchQuery.toLowerCase()));
+                
+                // Category Logic
                 if (category === 'streaming') list = list.filter(v => v.streaming === 'Excellent');
-                if (category === 'privacy') list = list.filter(v => v.useCases.includes('privacy'));
-                if (category === 'budget') list = list.filter(v => parseFloat(v.price.twoYear.replace('$','').replace('€','')) < 3.00);
-                if (category === 'torrenting') list = list.filter(v => v.useCases.includes('torrenting'));
-                if (category === 'gaming') list = list.filter(v => v.useCases.includes('gaming'));
-                if (category === 'travel') list = list.filter(v => v.useCases.includes('travel'));
-                if (category === 'business') list = list.filter(v => v.useCases.includes('business') || v.features.portForward);
-                if (category === 'crypto') list = list.filter(v => v.paymentMethods.some(p => p.includes('Crypto') || p.includes('Bitcoin') || p.includes('Monero')));
-                if (category === 'mobile') list = list.filter(v => v.platforms.includes('iOS') && v.platforms.includes('And'));
+                else if (category === 'privacy') list = list.filter(v => v.useCases.includes('privacy'));
+                else if (category === 'budget') list = list.filter(v => parseFloat(v.price.twoYear.replace('$','').replace('€','')) < 3.00);
+                else if (category === 'torrenting') list = list.filter(v => v.useCases.includes('torrenting'));
+                else if (category === 'gaming') list = list.filter(v => v.useCases.includes('gaming'));
+                else if (category === 'travel') list = list.filter(v => v.useCases.includes('travel'));
+                else if (category === 'business') list = list.filter(v => v.useCases.includes('business') || v.features.portForward);
+                else if (category === 'crypto') list = list.filter(v => v.paymentMethods.some(p => p.includes('Crypto') || p.includes('Bitcoin') || p.includes('Monero')));
+                else if (category === 'mobile') list = list.filter(v => v.platforms.includes('iOS') && v.platforms.includes('And'));
+
+                // Filters
                 if (filters.audited) list = list.filter(v => v.audit && v.audit !== "None");
                 if (filters.wireguard) list = list.filter(v => v.features.wireguard);
                 if (filters.cheap) list = list.filter(v => parseFloat(v.price.twoYear.replace('$','').replace('€','')) < 3.00);
                 if (filters.streaming) list = list.filter(v => v.streamingServices.netflix);
+
                 return list.sort((a,b) => b.overallScore - a.overallScore);
             }, [category, filters, vpns, searchQuery]);
 
@@ -731,7 +726,6 @@
                     default: return null;
                 }
             };
-            const Row = ({label, val}) => <div className="detail-row"><span className="detail-label">{label}</span><span className="detail-val" style={{color: val === '✓' ? 'var(--accent-win)' : 'inherit'}}>{val}</span></div>;
 
             return (
                 <div ref={cardRef} className={`tech-card ${highlighted ? 'highlight-card' : ''}`}>
@@ -755,7 +749,7 @@
         // --- SPEED ANALYSIS ---
         function SpeedAnalysisView({ vpns }) {
             const sorted = useMemo(() => [...vpns].sort((a,b) => b.speeds.download - a.speeds.download), [vpns]);
-            const maxSpeed = sorted[0].speeds.download;
+            const maxSpeed = sorted.length > 0 ? sorted[0].speeds.download : 500;
             return (
                 <div className="animate-enter" style={{ maxWidth: '1440px', margin: '40px auto', padding: '0 24px' }}>
                      <div style={{display:'flex', justifyContent:'space-between', alignItems:'flex-end', marginBottom:'20px'}}>
@@ -806,10 +800,22 @@
                 <header className="cyber-header">
                     <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
                         <div style={{ width: '40px', height: '40px', background: 'var(--text-primary)', color: 'var(--bg-deep)', display: 'grid', placeItems: 'center', fontWeight: 'bold', fontSize: '1.5rem', fontFamily: 'var(--font-display)' }}>V</div>
-                        <div><h1 className="font-display" style={{ fontSize: '1.2rem', lineHeight: 1 }}>VPN Compass</h1><div className="font-mono text-muted" style={{ fontSize: '0.7rem' }}>SYSTEM V.2026.01 // ONLINE</div></div>
+                        <div><h1 className="font-display" style={{ fontSize: '1.2rem', lineHeight: 1 }}>VPN Compass</h1></div>
                     </div>
-                    <button onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')} className="btn" style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-dim)' }}>{theme === 'dark' ? 'LIGHT MODE' : 'DARK MODE'}</button>
                 </header>
+            );
+        }
+
+        // --- NAV ---
+        function NavBar({ activeTab, onNav }) {
+            return (
+                <div style={{ borderBottom: '1px solid var(--border-dim)', background: 'var(--bg-deep)', position: 'sticky', top: '73px', zIndex: 90 }}>
+                    <div style={{ maxWidth: '1440px', margin: '0 auto', display: 'flex', justifyContent: 'center', gap: '10px', padding: '12px 24px', overflowX: 'auto' }}>
+                        {['dashboard', 'grid', 'speed', 'favorites'].map(tab => (
+                            <button key={tab} className={`btn ${activeTab === tab ? 'btn-primary' : 'btn-outline'}`} onClick={() => onNav(tab)} style={{fontSize: '0.8rem'}}>{tab.toUpperCase()}</button>
+                        ))}
+                    </div>
+                </div>
             );
         }
 
@@ -818,7 +824,7 @@
             return (
                 <footer style={{ borderTop: '1px solid var(--border-dim)', padding: '40px 24px', textAlign: 'center', color: 'var(--text-secondary)' }}>
                     <div className="font-display" style={{ marginBottom: '16px' }}>VPN COMPASS // 2026</div>
-                    <div className="font-mono" style={{ fontSize: '0.75rem' }}>DATA VERIFIED INDEPENDENTLY. CONNECTION ENCRYPTED.<br/><button onClick={onMethodology} style={{background:'none', border:'none', color:'var(--accent-acid)', cursor:'pointer', textDecoration:'underline', fontSize:'0.7rem'}}>VIEW METHODOLOGY</button></div>
+                    <div className="font-mono" style={{ fontSize: '0.75rem' }}>DATA VERIFIED INDEPENDENTLY.<br/><button onClick={onMethodology} style={{background:'none', border:'none', color:'var(--accent-acid)', cursor:'pointer', textDecoration:'underline', fontSize:'0.7rem'}}>VIEW METHODOLOGY</button></div>
                 </footer>
             );
         }
@@ -827,14 +833,14 @@
             return (
                 <div className="modal-overlay" onClick={onClose}>
                     <div className="modal" onClick={e => e.stopPropagation()}>
-                        <h2 className="font-display" style={{marginBottom: '20px'}}>SCORING METHODOLOGY</h2>
+                        <h2 className="font-display" style={{marginBottom: '20px'}}>TESTING PROTOCOLS</h2>
                         <ul style={{fontSize: '0.85rem', lineHeight: '1.6', paddingLeft: '20px'}}>
-                            <li><b>Security (35%):</b> Encryption standards, Kill Switch reliability, and independent audits.</li>
-                            <li><b>Privacy (30%):</b> Logging policy verification, jurisdiction, and ownership transparency.</li>
-                            <li><b>Speed (20%):</b> Automated daily speed tests from 5 global locations using WireGuard.</li>
-                            <li><b>Usability (15%):</b> App design, streaming unblocking capabilities, and support quality.</li>
+                            <li><b>Speed:</b> Daily automated tests from 5 locations (US, UK, DE, JP, AU) using WireGuard.</li>
+                            <li><b>Privacy:</b> Verification of no-logs claims via court documents or independent third-party audits.</li>
+                            <li><b>Streaming:</b> Weekly checks against Netflix, Hulu, BBC iPlayer, and Disney+.</li>
+                            <li><b>Support:</b> Anonymous shopper testing of response times and technical accuracy.</li>
                         </ul>
-                        <button className="btn btn-primary" style={{marginTop: '30px', width: '100%'}} onClick={onClose}>CLOSE DOCUMENT</button>
+                        <button className="btn btn-primary" style={{marginTop: '30px', width: '100%'}} onClick={onClose}>CLOSE</button>
                     </div>
                 </div>
             )
