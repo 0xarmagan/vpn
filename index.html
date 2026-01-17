@@ -462,7 +462,10 @@
         // --- GRID VIEW ---
         function GridView({ vpns, favorites, toggleFav, highlighted }) {
             const [search, setSearch] = useState('');
-            const filtered = vpns.filter(v => v.name.toLowerCase().includes(search.toLowerCase()));
+            // SORTED BY SCORE (DESCENDING)
+            const filtered = vpns
+                .filter(v => v.name.toLowerCase().includes(search.toLowerCase()))
+                .sort((a, b) => b.overallScore - a.overallScore);
 
             return (
                 <div className="animate-enter" style={{ maxWidth: '1440px', margin: '40px auto', padding: '0 24px' }}>
