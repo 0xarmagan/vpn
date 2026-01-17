@@ -8,7 +8,6 @@
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Manrope:wght@300;400;600;800&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
@@ -139,6 +138,29 @@
         .feature-item { display: flex; gap: 12px; align-items: flex-start; }
         .feature-check { color: var(--accent-win); font-weight: bold; font-size: 1.2rem; }
 
+        /* SPEED CHART STYLES (NEW) */
+        .speed-row {
+            display: flex; align-items: center; margin-bottom: 12px;
+            padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .speed-label { width: 140px; font-family: var(--font-mono); font-size: 0.85rem; flex-shrink: 0; }
+        .speed-track { flex-grow: 1; background: var(--bg-surface); height: 28px; position: relative; margin: 0 16px; border-radius: 2px; }
+        .speed-bar-dl {
+            height: 100%; background: var(--accent-acid);
+            background-image: repeating-linear-gradient(45deg, transparent, transparent 4px, rgba(0,0,0,0.3) 4px, rgba(0,0,0,0.3) 8px);
+            position: absolute; top: 0; left: 0; display: flex; align-items: center; justify-content: flex-end; padding-right: 8px;
+            color: black; font-weight: bold; font-size: 0.75rem; font-family: var(--font-mono);
+            transition: width 1s ease-out;
+        }
+        .speed-bar-ul {
+            height: 4px; background: var(--accent-cyan); position: absolute; bottom: -6px; left: 0;
+            transition: width 1s ease-out 0.2s;
+        }
+        .speed-meta { width: 100px; text-align: right; font-size: 0.75rem; color: var(--text-secondary); flex-shrink: 0; }
+        .speed-legend { display: flex; gap: 20px; justify-content: flex-end; margin-bottom: 20px; font-family: var(--font-mono); font-size: 0.7rem; }
+        .legend-item { display: flex; align-items: center; gap: 6px; }
+        .legend-color { width: 12px; height: 12px; border-radius: 2px; }
+
         /* FLOATING COMPARE BUTTON */
         .compare-fab {
             position: fixed; bottom: 30px; right: 30px; z-index: 200;
@@ -201,7 +223,7 @@
     <div id="root"></div>
 
     <script type="text/babel">
-        const { useState, useEffect, useRef } = React;
+        const { useState, useEffect, useRef, useMemo } = React;
 
         // --- COMPLETE 26 DATASET ---
         const ALL_VPN_DATA = [
@@ -345,44 +367,40 @@
             );
         }
 
-        // --- VISUAL SPEED ANALYSIS (CHART) ---
+        // --- VISUAL SPEED ANALYSIS (CSS-Based Matrix) ---
         function SpeedAnalysisView({ vpns }) {
-            const canvasRef = useRef(null);
-            const sorted = useMemo(() => [...vpns].sort((a,b) => b.speeds.download - a.speeds.download).slice(0, 15), [vpns]);
-
-            useEffect(() => {
-                if (canvasRef.current) {
-                    const ctx = canvasRef.current.getContext('2d');
-                    const chart = new Chart(ctx, {
-                        type: 'bar',
-                        data: {
-                            labels: sorted.map(v => v.name),
-                            datasets: [{
-                                label: 'Download Speed (Mbps)',
-                                data: sorted.map(v => v.speeds.download),
-                                backgroundColor: '#CCFF00',
-                                borderRadius: 4
-                            }]
-                        },
-                        options: {
-                            responsive: true,
-                            maintainAspectRatio: false,
-                            plugins: { legend: { display: false } },
-                            scales: { 
-                                y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.1)' }, ticks: { color: '#888' } }, 
-                                x: { grid: { display: false }, ticks: { color: '#FFF' } } 
-                            }
-                        }
-                    });
-                    return () => chart.destroy();
-                }
-            }, [sorted]);
+            // Sort by download speed
+            const sorted = useMemo(() => [...vpns].sort((a,b) => b.speeds.download - a.speeds.download), [vpns]);
+            const maxSpeed = sorted[0].speeds.download;
 
             return (
                 <div className="animate-enter" style={{ maxWidth: '1440px', margin: '40px auto', padding: '0 24px' }}>
-                     <h2 className="font-display" style={{marginBottom: '20px'}}>LIVE VELOCITY INDEX</h2>
-                     <div className="tech-card" style={{ padding: '24px', height: '500px' }}>
-                        <canvas ref={canvasRef}></canvas>
+                     <div style={{display:'flex', justifyContent:'space-between', alignItems:'flex-end', marginBottom:'20px'}}>
+                        <h2 className="font-display">GLOBAL VELOCITY INDEX</h2>
+                        <div className="speed-legend">
+                            <div className="legend-item"><div className="legend-color" style={{background:'var(--accent-acid)'}}></div> DOWNLOAD</div>
+                            <div className="legend-item"><div className="legend-color" style={{background:'var(--accent-cyan)'}}></div> UPLOAD</div>
+                        </div>
+                     </div>
+                     
+                     <div className="tech-card" style={{ padding: '24px' }}>
+                        {sorted.map(v => (
+                            <div key={v.name} className="speed-row">
+                                <div className="speed-label">{v.name}</div>
+                                <div className="speed-track">
+                                    {/* Download Bar */}
+                                    <div className="speed-bar-dl" style={{ width: `${(v.speeds.download / maxSpeed) * 100}%` }}>
+                                        {v.speeds.download}
+                                    </div>
+                                    {/* Upload Indicator */}
+                                    <div className="speed-bar-ul" style={{ width: `${(v.speeds.upload / maxSpeed) * 100}%` }}></div>
+                                </div>
+                                <div className="speed-meta">
+                                    <div style={{color:'var(--text-primary)'}}>{v.speeds.latency}ms</div>
+                                    <div style={{fontSize:'0.65rem'}}>PING</div>
+                                </div>
+                            </div>
+                        ))}
                      </div>
                 </div>
             );
