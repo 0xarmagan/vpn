@@ -303,7 +303,7 @@
                     <Nav activeTab={activeTab} setActiveTab={setActiveTab} />
                     
                     <main>
-                        {activeTab === 'dashboard' && <DecisionMatrix onRecClick={handleRecommendationClick} />}
+                        {activeTab === 'dashboard' && <DecisionMatrix onRecClick={handleRecommendationClick} vpns={ALL_VPN_DATA} />}
                         {activeTab === 'grid' && <GridView vpns={ALL_VPN_DATA} favorites={favorites} toggleFav={toggleFav} highlighted={highlighted} />}
                         {activeTab === 'compare' && <CompareView vpns={ALL_VPN_DATA} favorites={favorites} />}
                         {activeTab === 'speed' && <SpeedAnalysisView vpns={ALL_VPN_DATA} />}
@@ -349,7 +349,7 @@
         }
 
         // --- DASHBOARD (DECISION MATRIX) ---
-        function DecisionMatrix({ onRecClick }) {
+        function DecisionMatrix({ onRecClick, vpns }) {
             const useCases = [
                 { icon: "🛡️", title: "Daily Driver", desc: "Best balance of speed, security & price.", rec: "NordVPN" },
                 { icon: "🎥", title: "The Streamer", desc: "Unblocks Netflix, Hulu, BBC & Disney+.", rec: "Surfshark" },
@@ -391,6 +391,23 @@
                                 <div className="feature-item"><span className="feature-check">✅</span> <div><h4 className="font-display">Transparent Method</h4><p className="text-muted" style={{fontSize: '0.8rem'}}>Open scoring criteria</p></div></div>
                                 <div className="feature-item"><span className="feature-check">✅</span> <div><h4 className="font-display">Mobile-First Design</h4><p className="text-muted" style={{fontSize: '0.8rem'}}>Responsive Everywhere</p></div></div>
                             </div>
+                            
+                            {/* --- LIVE SPEED PULSE ON DASHBOARD --- */}
+                            <div style={{ marginTop: '80px', textAlign: 'left' }}>
+                                <h2 className="font-display" style={{ marginBottom: '20px' }}>LIVE NETWORK PULSE <span style={{fontSize:'0.6em', color:'var(--text-secondary)'}}>(TOP 5)</span></h2>
+                                <div className="tech-card" style={{ padding: '24px' }}>
+                                    {vpns.sort((a,b) => b.speeds.download - a.speeds.download).slice(0, 5).map(v => (
+                                        <div key={v.name} className="speed-row">
+                                            <div className="speed-label">{v.name}</div>
+                                            <div className="speed-track">
+                                                <div className="speed-bar-dl" style={{ width: `${(v.speeds.download / 500) * 100}%` }}>{v.speeds.download}</div>
+                                            </div>
+                                            <div className="speed-meta">Mbps</div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
                         </div>
                     </section>
                 </div>
