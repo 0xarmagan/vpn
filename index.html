@@ -721,33 +721,7 @@
                             <button type="submit" aria-label="Search" style={{background:'none', border:'none', cursor:'pointer'}} className="hero-search-icon">🔍</button>
                         </form>
                         
-                        {/* DIAGNOSTICS MODULE */}
-                        <div style={{maxWidth: '1440px', margin: '60px auto 0', textAlign: 'left', padding: '0 24px'}}>
-                            <h3 className="font-display" style={{marginBottom:'24px', borderLeft:'3px solid var(--accent-danger)', paddingLeft:'12px'}}>NETWORK DIAGNOSTICS</h3>
-                            <div className="diag-grid">
-                                <div className="diag-card">
-                                    <div className="diag-title">🌐 IP EXPOSURE CHECK</div>
-                                    <div className="diag-status" style={{color: ipData.ip.includes('.') ? 'var(--accent-danger)' : 'var(--text-secondary)'}}>
-                                        {ipData.ip}
-                                    </div>
-                                    <div className="diag-result-row"><span>Status</span> <span style={{color:'var(--accent-danger)'}}>Visible</span></div>
-                                    <div className="diag-result-row"><span>ISP</span> <span>{ipData.isp}</span></div>
-                                    <button className="diag-btn" style={{marginTop:'auto'}} onClick={runIpScan}>SCAN NOW</button>
-                                </div>
-                                <div className="diag-card">
-                                    <div className="diag-title">🔒 DNS LEAK TEST</div>
-                                    <div className="diag-status" style={{color: dnsStatus === 'Exposed' ? 'var(--accent-danger)' : 'var(--accent-win)'}}>
-                                        {dnsStatus.toUpperCase()}
-                                    </div>
-                                    <p style={{fontSize:'0.8rem', color:'var(--text-secondary)', marginBottom:'16px'}}>
-                                        If you see your actual ISP location here, your VPN tunnel is leaking requests.
-                                    </p>
-                                    <button className="diag-btn" style={{marginTop:'auto'}} onClick={runDnsScan}>START TEST</button>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* TOP PICKS */}
+                        {/* TOP STRATEGIC PICKS */}
                         <div style={{maxWidth: '1440px', margin: '60px auto 0', textAlign: 'left', padding: '0 24px'}}>
                             <h3 className="font-display" style={{marginBottom:'24px', borderLeft:'3px solid var(--accent-acid)', paddingLeft:'12px'}}>TOP STRATEGIC PICKS</h3>
                             <div className="top-picks-grid">
@@ -780,6 +754,32 @@
                                 <UseCaseCard icon="💼" title="Business" desc="Static IP & Team Accounts" onClick={() => onNavigate('business')} />
                                 <UseCaseCard icon="₿" title="Crypto" desc="Pay anonymously with Bitcoin/Monero" onClick={() => onNavigate('crypto')} />
                                 <UseCaseCard icon="📱" title="Mobile" desc="Best iOS & Android Apps" onClick={() => onNavigate('mobile')} />
+                            </div>
+                        </div>
+
+                        {/* NETWORK DIAGNOSTICS - MOVED HERE */}
+                        <div style={{maxWidth: '1440px', margin: '60px auto 0', textAlign: 'left', padding: '0 24px'}}>
+                            <h3 className="font-display" style={{marginBottom:'24px', borderLeft:'3px solid var(--accent-danger)', paddingLeft:'12px'}}>NETWORK DIAGNOSTICS</h3>
+                            <div className="diag-grid">
+                                <div className="diag-card">
+                                    <div className="diag-title">🌐 IP EXPOSURE CHECK</div>
+                                    <div className="diag-status" style={{color: ipData.ip.includes('.') ? 'var(--accent-danger)' : 'var(--text-secondary)'}}>
+                                        {ipData.ip}
+                                    </div>
+                                    <div className="diag-result-row"><span>Status</span> <span style={{color:'var(--accent-danger)'}}>Visible</span></div>
+                                    <div className="diag-result-row"><span>ISP</span> <span>{ipData.isp}</span></div>
+                                    <button className="diag-btn" style={{marginTop:'auto'}} onClick={runIpScan}>SCAN NOW</button>
+                                </div>
+                                <div className="diag-card">
+                                    <div className="diag-title">🔒 DNS LEAK TEST</div>
+                                    <div className="diag-status" style={{color: dnsStatus === 'Exposed' ? 'var(--accent-danger)' : 'var(--accent-win)'}}>
+                                        {dnsStatus.toUpperCase()}
+                                    </div>
+                                    <p style={{fontSize:'0.8rem', color:'var(--text-secondary)', marginBottom:'16px'}}>
+                                        If you see your actual ISP location here, your VPN tunnel is leaking requests.
+                                    </p>
+                                    <button className="diag-btn" style={{marginTop:'auto'}} onClick={runDnsScan}>START TEST</button>
+                                </div>
                             </div>
                         </div>
                     </section>
