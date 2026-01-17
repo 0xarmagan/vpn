@@ -130,6 +130,35 @@
             display: flex; justify-content: space-between; align-items: center;
         }
         
+        /* FLOATING COMPARE BUTTON */
+        .compare-fab {
+            position: fixed; bottom: 30px; right: 30px; z-index: 200;
+            background: var(--accent-acid); color: var(--bg-deep);
+            padding: 16px 32px; border-radius: 99px; font-weight: bold; font-family: var(--font-display);
+            box-shadow: 0 10px 30px rgba(204,255,0,0.3); border: none; cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .compare-fab:hover { transform: scale(1.05); }
+
+        /* COMPARISON TABLE VIEW */
+        .compare-container {
+            overflow-x: auto; padding: 40px 24px; max-width: 100vw;
+        }
+        .compare-grid {
+            display: grid; gap: 24px; min-width: 100%;
+        }
+        .compare-col {
+            background: var(--bg-panel); border: 1px solid var(--border-dim);
+            border-top: 3px solid var(--accent-acid);
+        }
+        .compare-cell {
+            padding: 16px; border-bottom: 1px solid var(--border-dim);
+            font-size: 0.85rem; display: flex; justify-content: space-between;
+        }
+        .compare-header {
+            background: var(--bg-surface); padding: 24px; text-align: center;
+        }
+
         /* HERO */
         .hero-glitch {
             text-align: center; padding: 80px 24px;
@@ -209,9 +238,16 @@
                     <main style={{ minHeight: '80vh' }}>
                         {activeTab === 'dashboard' && <DecisionMatrix onNav={setActiveTab} />}
                         {activeTab === 'grid' && <GridView vpns={ALL_VPN_DATA} favorites={favorites} toggleFav={toggleFav} />}
-                        {activeTab === 'table' && <TableView vpns={ALL_VPN_DATA} />}
+                        {activeTab === 'compare' && <CompareView vpns={ALL_VPN_DATA} favorites={favorites} />}
                         {activeTab === 'favorites' && <GridView vpns={ALL_VPN_DATA.filter(v => favorites.includes(v.name))} favorites={favorites} toggleFav={toggleFav} emptyMsg="No favorites tracked." />}
                     </main>
+
+                    {/* Compare FAB */}
+                    {favorites.length > 1 && activeTab !== 'compare' && (
+                        <button className="compare-fab" onClick={() => setActiveTab('compare')}>
+                            COMPARE ({favorites.length})
+                        </button>
+                    )}
                 </div>
             );
         }
@@ -232,7 +268,7 @@
             return (
                 <div style={{ borderBottom: '1px solid var(--border-dim)', background: 'var(--bg-deep)', position: 'sticky', top: '73px', zIndex: 90 }}>
                     <div style={{ maxWidth: '1440px', margin: '0 auto', display: 'flex', justifyContent: 'center', gap: '10px', padding: '12px 24px', overflowX: 'auto' }}>
-                        {['dashboard', 'grid', 'table', 'favorites'].map(tab => (
+                        {['dashboard', 'grid', 'favorites'].map(tab => (
                             <button key={tab} className={`btn ${activeTab === tab ? 'btn-primary' : 'btn-outline'}`} onClick={() => setActiveTab(tab)} style={{fontSize: '0.8rem'}}>{tab.toUpperCase()}</button>
                         ))}
                     </div>
@@ -240,7 +276,7 @@
             );
         }
 
-        // --- NEW DECISION MATRIX (7 CARDS) ---
+        // --- NEW DECISION MATRIX (8 CARDS) ---
         function DecisionMatrix({ onNav }) {
             const useCases = [
                 { icon: "🛡️", title: "Daily Driver", desc: "Best balance of speed, security & price.", rec: "NordVPN" },
@@ -249,7 +285,8 @@
                 { icon: "✈️", title: "The Traveler", desc: "Works in restrictive regions (China/UAE).", rec: "Astrill" },
                 { icon: "💸", title: "Budget Conscious", desc: "Lowest price for premium features.", rec: "Surfshark" },
                 { icon: "🏴‍☠️", title: "Torrent/P2P", desc: "Port forwarding & proven no-logs.", rec: "ProtonVPN" },
-                { icon: "🎮", title: "The Gamer", desc: "Lowest latency & DDoS protection.", rec: "NordVPN" }
+                { icon: "🎮", title: "The Gamer", desc: "Lowest latency & DDoS protection.", rec: "NordVPN" },
+                { icon: "👨‍💻", title: "The Developer", desc: "Linux GUI, WireGuard config & API.", rec: "IVPN" }
             ];
 
             return (
@@ -273,6 +310,36 @@
                             </div>
                         </div>
                     </section>
+                </div>
+            );
+        }
+
+        // --- NEW COMPARE VIEW ---
+        function CompareView({ vpns, favorites }) {
+            const selected = vpns.filter(v => favorites.includes(v.name));
+            
+            if (selected.length < 2) return <div style={{padding:'40px', textAlign:'center'}}>Select at least 2 favorites to compare.</div>;
+
+            return (
+                <div className="compare-container animate-enter">
+                    <div className="compare-grid" style={{ gridTemplateColumns: `repeat(${selected.length}, minmax(280px, 1fr))` }}>
+                        {selected.map(v => (
+                            <div key={v.name} className="compare-col">
+                                <div className="compare-header">
+                                    <h2 className="font-display">{v.name}</h2>
+                                    <div className="text-acid font-mono" style={{fontSize:'1.5rem'}}>{v.overallScore}</div>
+                                </div>
+                                <div className="compare-cell"><span>Price (2yr)</span> <b className="font-mono">{v.price.twoYear}</b></div>
+                                <div className="compare-cell"><span>Download</span> <b className="font-mono">{v.speeds.download} Mbps</b></div>
+                                <div className="compare-cell"><span>Servers</span> <b>{v.servers}</b></div>
+                                <div className="compare-cell"><span>Jurisdiction</span> <b>{v.jurisdiction}</b></div>
+                                <div className="compare-cell"><span>No-Logs</span> <b>{v.noLogs}</b></div>
+                                <div className="compare-cell"><span>Netflix</span> <b style={{color: v.streamingServices.netflix ? 'var(--accent-win)' : 'var(--text-muted)'}}>{v.streamingServices.netflix ? 'YES' : 'NO'}</b></div>
+                                <div className="compare-cell"><span>Kill Switch</span> <b>{v.features.killSwitch ? 'YES' : 'NO'}</b></div>
+                                <div className="compare-cell"><span>Protocols</span> <span style={{fontSize:'0.7rem', textAlign:'right'}}>{v.protocols.join(', ')}</span></div>
+                            </div>
+                        ))}
+                    </div>
                 </div>
             );
         }
@@ -390,34 +457,6 @@
                     <div className="card-footer">
                         <button className="btn btn-outline" onClick={() => setExpanded(!expanded)}>{expanded ? 'CLOSE INTEL' : 'VIEW 15 PARAMETERS'}</button>
                         <button className="btn" style={{ background: isFav ? 'var(--accent-danger)' : 'var(--border-dim)', color: 'white' }} onClick={() => toggleFav(vpn.name)}>{isFav ? '♥' : '♡'}</button>
-                    </div>
-                </div>
-            );
-        }
-
-        function TableView({ vpns }) {
-            return (
-                <div className="animate-enter" style={{ padding: '40px 0' }}>
-                    <div className="table-wrapper">
-                        <table className="tech-table">
-                            <thead>
-                                <tr><th>PROVIDER</th><th>SCORE</th><th>PRICE</th><th>SPEED</th><th>LOGS</th><th>AUDIT</th><th>STREAMING</th><th>DEVICES</th></tr>
-                            </thead>
-                            <tbody>
-                                {vpns.map((v, i) => (
-                                    <tr key={i}>
-                                        <td className="font-display">{v.name}</td>
-                                        <td><span className="text-acid">{v.overallScore}</span></td>
-                                        <td className="font-mono">{v.price.twoYear}</td>
-                                        <td className="font-mono">{v.speeds.download} Mbps</td>
-                                        <td>{v.noLogs}</td>
-                                        <td>{v.audit}</td>
-                                        <td>{v.streaming}</td>
-                                        <td>{v.devices}</td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
                     </div>
                 </div>
             );
