@@ -8,6 +8,7 @@
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Manrope:wght@300;400;600;800&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
@@ -73,6 +74,13 @@
         /* Animations */
         @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         .animate-enter { animation: slideUp 0.6s var(--ease-snap) forwards; }
+        
+        @keyframes pulseHighlight {
+            0% { box-shadow: 0 0 0 0 rgba(204, 255, 0, 0.7); border-color: var(--accent-acid); }
+            70% { box-shadow: 0 0 0 20px rgba(204, 255, 0, 0); border-color: var(--accent-acid); }
+            100% { box-shadow: 0 0 0 0 rgba(204, 255, 0, 0); border-color: var(--border-dim); }
+        }
+        .highlight-card { animation: pulseHighlight 2s ease-out; border: 1px solid var(--accent-acid) !important; }
 
         /* HEADER */
         .cyber-header {
@@ -121,14 +129,16 @@
         }
         .use-case-card {
             background: var(--bg-panel); border: 1px solid var(--border-dim); padding: 24px;
-            position: relative; overflow: hidden; transition: 0.3s;
+            position: relative; overflow: hidden; transition: 0.3s; cursor: pointer;
         }
-        .use-case-card:hover { border-color: var(--accent-acid); transform: translateY(-2px); }
+        .use-case-card:hover { border-color: var(--accent-acid); transform: translateY(-2px); box-shadow: 0 10px 30px rgba(204,255,0,0.1); }
         .use-case-icon { font-size: 2rem; margin-bottom: 16px; color: var(--text-tertiary); }
         .use-case-rec { 
             margin-top: 16px; padding-top: 16px; border-top: 1px dashed var(--border-dim);
             display: flex; justify-content: space-between; align-items: center;
         }
+        .arrow-icon { color: var(--accent-acid); opacity: 0; transition: 0.2s; transform: translateX(-10px); }
+        .use-case-card:hover .arrow-icon { opacity: 1; transform: translateX(0); }
 
         /* FEATURES SECTION */
         .features-grid {
@@ -263,6 +273,7 @@
             const [favorites, setFavorites] = useState(() => JSON.parse(localStorage.getItem('vpn_compass_favs') || '[]'));
             const [theme, setTheme] = useState('dark');
             const [showMethodology, setShowMethodology] = useState(false);
+            const [highlighted, setHighlighted] = useState(null);
 
             useEffect(() => { document.documentElement.setAttribute('data-theme', theme); }, [theme]);
 
@@ -272,20 +283,24 @@
                 localStorage.setItem('vpn_compass_favs', JSON.stringify(newFavs));
             };
 
+            const handleUseCaseClick = (vpnName) => {
+                setActiveTab('grid');
+                setHighlighted(vpnName);
+            };
+
             return (
                 <div>
                     <Header theme={theme} setTheme={setTheme} />
                     <Nav activeTab={activeTab} setActiveTab={setActiveTab} />
                     
                     <main style={{ minHeight: '80vh' }}>
-                        {activeTab === 'dashboard' && <DecisionMatrix onNav={setActiveTab} />}
-                        {activeTab === 'grid' && <GridView vpns={ALL_VPN_DATA} favorites={favorites} toggleFav={toggleFav} />}
+                        {activeTab === 'dashboard' && <DecisionMatrix onRecClick={handleUseCaseClick} />}
+                        {activeTab === 'grid' && <GridView vpns={ALL_VPN_DATA} favorites={favorites} toggleFav={toggleFav} highlighted={highlighted} />}
                         {activeTab === 'compare' && <CompareView vpns={ALL_VPN_DATA} favorites={favorites} />}
                         {activeTab === 'speed' && <SpeedAnalysisView vpns={ALL_VPN_DATA} />}
                         {activeTab === 'favorites' && <GridView vpns={ALL_VPN_DATA.filter(v => favorites.includes(v.name))} favorites={favorites} toggleFav={toggleFav} emptyMsg="No favorites tracked." />}
                     </main>
 
-                    {/* Compare FAB */}
                     {favorites.length > 1 && activeTab !== 'compare' && (
                         <button className="compare-fab" onClick={() => setActiveTab('compare')}>
                             COMPARE ({favorites.length})
@@ -323,7 +338,7 @@
         }
 
         // --- NEW DECISION MATRIX (8 CARDS) & FEATURES ---
-        function DecisionMatrix({ onNav }) {
+        function DecisionMatrix({ onRecClick }) {
             const useCases = [
                 { icon: "🛡️", title: "Daily Driver", desc: "Best balance of speed, security & price.", rec: "NordVPN" },
                 { icon: "🎥", title: "The Streamer", desc: "Unblocks Netflix, Hulu, BBC & Disney+.", rec: "Surfshark" },
@@ -343,13 +358,16 @@
                         <div style={{ maxWidth: '1440px', margin: '0 auto', padding: '0 24px' }}>
                             <div className="decision-grid">
                                 {useCases.map((uc, i) => (
-                                    <div key={i} className="use-case-card">
+                                    <div key={i} className="use-case-card" onClick={() => onRecClick(uc.rec)}>
                                         <div className="use-case-icon">{uc.icon}</div>
                                         <h3 className="font-display" style={{ fontSize: '1.25rem' }}>{uc.title}</h3>
                                         <p className="text-muted" style={{ fontSize: '0.9rem', minHeight: '40px' }}>{uc.desc}</p>
                                         <div className="use-case-rec">
-                                            <span className="font-mono text-secondary" style={{ fontSize: '0.7rem' }}>RECOMMENDATION</span>
-                                            <span className="font-display text-acid" style={{ fontSize: '1.1rem' }}>{uc.rec}</span>
+                                            <div>
+                                                <span className="font-mono text-secondary" style={{ fontSize: '0.7rem', display:'block' }}>RECOMMENDATION</span>
+                                                <span className="font-display text-acid" style={{ fontSize: '1.1rem' }}>{uc.rec}</span>
+                                            </div>
+                                            <div className="arrow-icon">➔</div>
                                         </div>
                                     </div>
                                 ))}
@@ -438,7 +456,7 @@
         }
 
         // --- ENHANCED GRID CARD WITH TABS ---
-        function GridView({ vpns, favorites, toggleFav, emptyMsg }) {
+        function GridView({ vpns, favorites, toggleFav, emptyMsg, highlighted }) {
             const [search, setSearch] = useState('');
             const filtered = vpns.filter(v => v.name.toLowerCase().includes(search.toLowerCase()));
 
@@ -447,15 +465,31 @@
                     <input type="text" placeholder="SEARCH 26 PROVIDERS..." style={{ width: '100%', maxWidth: '400px', padding: '12px', background: 'var(--bg-panel)', border: '1px solid var(--border-dim)', color: 'white', marginBottom: '24px' }} onChange={e => setSearch(e.target.value)} />
                     {filtered.length === 0 ? <div className="text-muted">{emptyMsg || "No results."}</div> : 
                     <div className="layout-grid">
-                        {filtered.map(vpn => <VPNCard key={vpn.name} vpn={vpn} isFav={favorites.includes(vpn.name)} toggleFav={toggleFav} />)}
+                        {filtered.map(vpn => (
+                            <VPNCard 
+                                key={vpn.name} 
+                                vpn={vpn} 
+                                isFav={favorites.includes(vpn.name)} 
+                                toggleFav={toggleFav} 
+                                highlighted={highlighted === vpn.name}
+                            />
+                        ))}
                     </div>}
                 </div>
             );
         }
 
-        function VPNCard({ vpn, isFav, toggleFav }) {
+        function VPNCard({ vpn, isFav, toggleFav, highlighted }) {
             const [expanded, setExpanded] = useState(false);
             const [tab, setTab] = useState('speed');
+            const cardRef = useRef(null);
+
+            useEffect(() => {
+                if (highlighted && cardRef.current) {
+                    cardRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    setExpanded(true); // Auto-expand recommended card
+                }
+            }, [highlighted]);
 
             const renderTabContent = () => {
                 switch(tab) {
@@ -515,7 +549,7 @@
             );
 
             return (
-                <div className="tech-card">
+                <div ref={cardRef} className={`tech-card ${highlighted ? 'highlight-card' : ''}`}>
                     <div className="card-header">
                         <div>
                             <span className="font-mono text-acid" style={{fontSize:'0.7rem'}}>#{vpn.rank} OVERALL</span>
