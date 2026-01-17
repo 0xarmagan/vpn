@@ -52,9 +52,13 @@
             min-height: 100vh;
         }
 
-        /* Utility Typography */
+        /* Utility Typography - IMPROVED */
         .font-mono { font-family: var(--font-mono); letter-spacing: -0.02em; }
-        .font-display { font-family: var(--font-display); text-transform: uppercase; letter-spacing: 0.02em; }
+        .font-display { 
+            font-family: var(--font-display); 
+            text-transform: uppercase; 
+            letter-spacing: 0.05em; /* INCREASED from 0.02em for more impact */
+        }
         .text-acid { color: var(--accent-acid); }
         .text-muted { color: var(--text-secondary); }
 
@@ -68,6 +72,12 @@
             100% { box-shadow: 0 0 0 0 rgba(204, 255, 0, 0); border-color: var(--border-dim); }
         }
         .highlight-card { animation: pulseHighlight 2s ease-out; border: 1px solid var(--accent-acid) !important; z-index: 50; scroll-margin-top: 140px; }
+
+        /* NEW: Pulse animation for speed indicators */
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
 
         /* HEADER */
         .cyber-header {
@@ -84,7 +94,7 @@
             gap: 24px; align-items: start;
         }
 
-        /* TECH CARDS */
+        /* TECH CARDS - IMPROVED */
         .tech-card {
             background: var(--bg-panel); border: 1px solid var(--border-dim); border-radius: 2px;
             position: relative; transition: all 0.3s var(--ease-snap);
@@ -98,9 +108,42 @@
         .tech-card:hover { transform: translateY(-4px); border-color: var(--border-bright); box-shadow: 0 20px 40px -10px rgba(0,0,0,0.5); }
         .tech-card:hover::before { transform: scaleX(1); }
 
-        .card-header { padding: 20px; border-bottom: 1px solid var(--border-dim); display: flex; justify-content: space-between; align-items: flex-start; }
-        .card-body { padding: 20px; font-size: 0.9rem; flex-grow: 1; }
-        .card-footer { padding: 16px 20px; background: var(--bg-surface); border-top: 1px solid var(--border-dim); display: flex; gap: 10px; }
+        /* NEW: Progressive opacity for lower ranked items */
+        .tech-card[data-rank="11"],
+        .tech-card[data-rank="12"],
+        .tech-card[data-rank="13"],
+        .tech-card[data-rank="14"],
+        .tech-card[data-rank="15"] {
+            opacity: 0.95;
+        }
+        .tech-card[data-rank="16"],
+        .tech-card[data-rank="17"],
+        .tech-card[data-rank="18"],
+        .tech-card[data-rank="19"],
+        .tech-card[data-rank="20"] {
+            opacity: 0.90;
+        }
+
+        .card-header { 
+            padding: 24px 28px 20px; /* INCREASED from 20px */
+            border-bottom: 1px solid var(--border-dim); 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: flex-start; 
+        }
+        .card-body { 
+            padding: 28px; /* INCREASED from 20px */
+            font-size: 0.9rem; 
+            line-height: 1.6; /* NEW: explicit line height */
+            flex-grow: 1; 
+        }
+        .card-footer { 
+            padding: 16px 28px; /* INCREASED horizontal padding */
+            background: var(--bg-surface); 
+            border-top: 1px solid var(--border-dim); 
+            display: flex; 
+            gap: 10px; 
+        }
 
         /* TABBED INTERFACE IN CARDS */
         .card-tabs { display: flex; gap: 2px; margin-bottom: 16px; border-bottom: 1px solid var(--border-dim); overflow-x: auto; }
@@ -118,15 +161,29 @@
         .detail-link { color: var(--accent-cyan); text-decoration: none; border-bottom: 1px dashed var(--accent-cyan); cursor: pointer; }
         .detail-link:hover { color: white; border-color: white; }
 
-        /* LAYER 1: TOP PICKS GRID */
+        /* LAYER 1: TOP PICKS GRID - IMPROVED HIERARCHY */
         .top-picks-grid {
             display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px;
             margin-bottom: 60px;
         }
         .top-pick-card {
-            background: var(--bg-panel); border: 1px solid var(--border-dim); padding: 24px;
+            background: var(--bg-panel); border: 1px solid var(--border-dim); 
+            padding: 28px; /* INCREASED from 24px */
             border-top: 3px solid var(--accent-acid); position: relative; transition: 0.3s;
         }
+        
+        /* NEW: Enhanced hierarchy for top picks */
+        .top-pick-card:nth-child(1) {
+            border-top: 4px solid var(--accent-acid);
+            transform: scale(1.02);
+        }
+        .top-pick-card:nth-child(2) {
+            border-top: 3px solid var(--accent-cyan);
+        }
+        .top-pick-card:nth-child(2) .top-pick-badge {
+            background: var(--accent-cyan);
+        }
+        
         .top-pick-card:hover { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         .top-pick-badge {
             background: var(--accent-acid); color: black; font-weight: bold; font-family: var(--font-mono);
@@ -148,6 +205,7 @@
             background: var(--bg-panel); border: 1px solid var(--border-dim); padding: 24px;
             position: relative; overflow: hidden; transition: 0.3s; cursor: pointer;
             border-left: 2px solid var(--border-bright); display: flex; flex-direction: column;
+            min-height: 44px; /* NEW: Minimum touch target */
         }
         .use-case-card:hover { border-color: var(--accent-acid); transform: translateY(-4px); background: var(--bg-surface); }
         .use-case-icon { font-size: 2rem; margin-bottom: 16px; color: var(--text-tertiary); }
@@ -177,6 +235,7 @@
             background: var(--bg-panel); border: 1px solid var(--accent-acid); color: var(--accent-acid);
             padding: 10px; cursor: pointer; font-family: var(--font-mono); font-weight: bold;
             transition: 0.2s; text-transform: uppercase; letter-spacing: 0.05em;
+            min-height: 44px; /* NEW: Touch target */
         }
         .diag-btn:hover { background: var(--accent-acid); color: black; }
         .diag-result-row { display: flex; justify-content: space-between; font-size: 0.85rem; padding: 8px 0; border-bottom: 1px solid var(--border-dim); }
@@ -190,9 +249,14 @@
         .filter-toggle {
             display: flex; align-items: center; gap: 8px; font-size: 0.75rem; font-family: var(--font-mono);
             color: var(--text-secondary); cursor: pointer; user-select: none;
+            min-height: 44px; /* NEW: Touch target */
+            padding: 8px;
         }
         .filter-checkbox {
-            appearance: none; width: 14px; height: 14px; border: 1px solid var(--border-bright);
+            appearance: none; 
+            width: 18px; /* INCREASED from 14px */
+            height: 18px; /* INCREASED from 14px */
+            border: 1px solid var(--border-bright);
             border-radius: 2px; background: var(--bg-deep); cursor: pointer; position: relative;
         }
         .filter-checkbox.checked { background: var(--accent-acid); border-color: var(--accent-acid); }
@@ -211,10 +275,13 @@
             background: var(--bg-panel); border: 1px solid var(--accent-acid); 
             color: white; font-family: var(--font-mono); font-size: 1rem;
             border-radius: 2px; box-shadow: 0 0 20px rgba(204,255,0,0.1);
+            min-height: 44px; /* NEW: Touch target */
         }
         .hero-search-icon {
             position: absolute; right: 20px; top: 50%; transform: translateY(-50%);
             color: var(--accent-acid); font-size: 1.2rem; background: none; border: none; cursor: pointer;
+            min-width: 44px; /* NEW: Touch target */
+            min-height: 44px;
         }
 
         /* SPEED CHART STYLES (Cyber Style) */
@@ -231,6 +298,19 @@
             color: black; font-weight: bold; font-size: 0.75rem; font-family: var(--font-mono);
             transition: width 1s ease-out;
         }
+        
+        /* NEW: Pulse indicator at the end of speed bars */
+        .speed-bar-dl::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 0;
+            width: 3px;
+            height: 100%;
+            background: white;
+            box-shadow: 0 0 10px var(--accent-acid);
+            animation: pulse 2s infinite;
+        }
         .speed-bar-ul {
             height: 4px; background: var(--accent-cyan); position: absolute; bottom: -6px; left: 0;
             transition: width 1s ease-out 0.2s;
@@ -240,15 +320,26 @@
         .legend-item { display: flex; align-items: center; gap: 6px; }
         .legend-color { width: 12px; height: 12px; border-radius: 2px; }
 
-        /* FLOATING COMPARE BUTTON */
+        /* FLOATING COMPARE BUTTON - IMPROVED MOBILE */
         .compare-fab {
             position: fixed; bottom: 30px; right: 30px; z-index: 200;
             background: var(--accent-acid); color: black;
             padding: 16px 32px; border-radius: 2px; font-weight: bold; font-family: var(--font-display);
             box-shadow: 0 0 20px rgba(204,255,0,0.3); border: none; cursor: pointer;
             transition: transform 0.2s; clip-path: polygon(10% 0, 100% 0, 100% 100%, 0% 100%, 0% 20%);
+            min-height: 44px; /* NEW: Touch target */
         }
         .compare-fab:hover { transform: scale(1.05); }
+        
+        /* NEW: Mobile responsive positioning */
+        @media (max-width: 768px) {
+            .compare-fab {
+                bottom: 20px;
+                right: 20px;
+                padding: 12px 24px;
+                font-size: 0.85rem;
+            }
+        }
 
         /* COMPARISON TABLE VIEW */
         .compare-container {
@@ -287,17 +378,75 @@
             background: radial-gradient(circle at center, rgba(204,255,0,0.05) 0%, transparent 70%);
         }
 
-        /* BUTTONS & BADGES */
-        .btn { border: none; cursor: pointer; font-family: var(--font-mono); font-weight: 600; padding: 10px 16px; border-radius: 2px; text-decoration: none; display: inline-block; }
+        /* BUTTONS & BADGES - IMPROVED */
+        .btn { 
+            border: none; 
+            cursor: pointer; 
+            font-family: var(--font-mono); 
+            font-weight: 600; 
+            padding: 10px 16px; 
+            border-radius: 2px; 
+            text-decoration: none; 
+            display: inline-flex; /* Changed to inline-flex */
+            align-items: center;
+            justify-content: center;
+            min-height: 44px; /* NEW: Touch target */
+        }
         .btn-primary { background: var(--text-primary); color: var(--bg-deep); }
         .btn-primary:hover { background: var(--accent-acid); color: black; }
-        .btn-outline { background: transparent; border: 1px solid var(--border-bright); color: var(--text-primary); width: 100%; display: flex; justify-content: center; }
-        .score-box { background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border-dim); padding: 4px 12px; border-radius: 4px; text-align: center; }
-        .update-badge { font-size: 0.65rem; color: var(--accent-cyan); border: 1px solid var(--accent-cyan); padding: 2px 6px; border-radius: 4px; display: inline-block; margin-top: 8px; }
+        .btn-outline { 
+            background: transparent; 
+            border: 1px solid var(--border-bright); 
+            color: var(--text-primary); 
+            width: 100%; 
+            display: flex; 
+            justify-content: center; 
+        }
+        .score-box { 
+            background: rgba(255, 255, 255, 0.05); 
+            border: 1px solid var(--border-dim); 
+            padding: 8px 16px; /* INCREASED from 4px 12px */
+            border-radius: 4px; 
+            text-align: center; 
+        }
+        .update-badge { 
+            font-size: 0.65rem; 
+            color: var(--accent-cyan); 
+            border: 1px solid var(--accent-cyan); 
+            padding: 2px 6px; 
+            border-radius: 4px; 
+            display: inline-block; 
+            margin-top: 8px; 
+        }
 
         /* UTILS */
         .status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 6px; }
         .dot-green { background: var(--accent-acid); box-shadow: 0 0 8px var(--accent-acid); }
+        
+        /* NEW: Spec grid for card body */
+        .spec-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+        .spec-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .spec-label {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+        }
+        .spec-value {
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+            color: var(--text-primary);
+            font-weight: 600;
+        }
     </style>
 </head>
 <body>
@@ -569,7 +718,7 @@
                                 value={localSearch}
                                 onChange={(e) => setLocalSearch(e.target.value)}
                             />
-                            <button type="submit" style={{background:'none', border:'none', cursor:'pointer'}} className="hero-search-icon">🔍</button>
+                            <button type="submit" aria-label="Search" style={{background:'none', border:'none', cursor:'pointer'}} className="hero-search-icon">🔍</button>
                         </form>
                         
                         {/* DIAGNOSTICS MODULE */}
@@ -681,19 +830,33 @@
             return (
                 <div className="animate-enter">
                     <div className="filter-bar">
-                        <button onClick={onBack} style={{background:'none', border:'none', color:'var(--accent-acid)', cursor:'pointer', fontWeight:'bold', marginRight:'16px', fontFamily:'var(--font-mono)'}}>← BACK</button>
+                        <button onClick={onBack} style={{background:'none', border:'none', color:'var(--accent-acid)', cursor:'pointer', fontWeight:'bold', marginRight:'16px', fontFamily:'var(--font-mono)', minHeight:'44px'}}>← BACK</button>
                         <div className="filter-toggle" onClick={() => toggleFilter('audited')}><div className={`filter-checkbox ${filters.audited ? 'checked' : ''}`}></div> AUDITED</div>
                         <div className="filter-toggle" onClick={() => toggleFilter('wireguard')}><div className={`filter-checkbox ${filters.wireguard ? 'checked' : ''}`}></div> WIREGUARD</div>
                         <div className="filter-toggle" onClick={() => toggleFilter('cheap')}><div className={`filter-checkbox ${filters.cheap ? 'checked' : ''}`}></div> UNDER $3</div>
                         <div className="filter-toggle" onClick={() => toggleFilter('streaming')}><div className={`filter-checkbox ${filters.streaming ? 'checked' : ''}`}></div> STREAMING</div>
                     </div>
                     <div style={{maxWidth:'1440px', margin:'40px auto', padding:'0 24px'}}>
-                        <div style={{display:'flex', justifyContent:'space-between', alignItems:'flex-end', marginBottom:'20px'}}>
+                        <div style={{display:'flex', justifyContent:'space-between', alignItems:'flex-end', marginBottom:'20px', flexWrap:'wrap', gap:'16px'}}>
                             <div>
                                 <h2 className="font-display" style={{fontSize:'2rem', marginBottom:'10px'}}>{category === 'all' ? 'ALL PROVIDERS' : category.toUpperCase() + ' INTELLIGENCE'}</h2>
                                 <p className="text-muted">Tactical database of 26 providers.</p>
                             </div>
-                            <input type="text" placeholder="Search List..." style={{ padding: '10px', background: 'var(--bg-panel)', border: '1px solid var(--border-dim)', color: 'white', borderRadius: '2px', width: '200px' }} value={searchQuery} onChange={e => setSearchQuery(e.target.value)} />
+                            <input 
+                                type="text" 
+                                placeholder="Search List..." 
+                                style={{ 
+                                    padding: '10px', 
+                                    background: 'var(--bg-panel)', 
+                                    border: '1px solid var(--border-dim)', 
+                                    color: 'white', 
+                                    borderRadius: '2px', 
+                                    width: '200px',
+                                    minHeight: '44px'
+                                }} 
+                                value={searchQuery} 
+                                onChange={e => setSearchQuery(e.target.value)} 
+                            />
                         </div>
                         <div className="layout-grid">
                             {filtered.map(vpn => (
@@ -719,26 +882,73 @@
 
             const renderTabContent = () => {
                 switch(tab) {
-                    case 'privacy': return (<div><Row label="Jurisdiction" val={vpn.jurisdiction} /><div className="detail-row"><span className="detail-label">Audit</span><a href={vpn.auditLink} target="_blank" className="detail-link">{vpn.audit}</a></div><Row label="No-Logs" val={vpn.noLogs} /></div>);
-                    case 'speed': return (<div><Row label="Download" val={`${vpn.speeds.download} Mbps`} /><div className="speed-track" style={{margin:'10px 0'}}><div className="speed-bar-dl" style={{width: `${(vpn.speeds.download/500)*100}%`}}></div></div></div>);
-                    case 'stream': return (<div><Row label="Netflix" val={vpn.streamingServices.netflix ? "✓" : "✕"} /><Row label="Hulu" val={vpn.streamingServices.hulu ? "✓" : "✕"} /><Row label="BBC" val={vpn.streamingServices.bbc ? "✓" : "✕"} /></div>);
-                    case 'tech': return (<div><Row label="Kill Switch" val={vpn.features.killSwitch ? "✓" : "✕"} /><Row label="WireGuard" val={vpn.features.wireguard ? "✓" : "✕"} /><Row label="P2P" val={vpn.features.portForward ? "✓" : "✕"} /></div>);
+                    case 'privacy': return (
+                        <div>
+                            <Row label="Jurisdiction" val={vpn.jurisdiction} />
+                            <div className="detail-row">
+                                <span className="detail-label">Audit</span>
+                                <a href={vpn.auditLink} target="_blank" rel="noopener noreferrer" className="detail-link">{vpn.audit}</a>
+                            </div>
+                            <Row label="No-Logs" val={vpn.noLogs} />
+                        </div>
+                    );
+                    case 'speed': return (
+                        <div>
+                            <Row label="Download" val={`${vpn.speeds.download} Mbps`} />
+                            <div className="speed-track" style={{margin:'10px 0'}}>
+                                <div className="speed-bar-dl" style={{width: `${(vpn.speeds.download/500)*100}%`}}></div>
+                            </div>
+                            <Row label="Upload" val={`${vpn.speeds.upload} Mbps`} />
+                            <Row label="Latency" val={`${vpn.speeds.latency} ms`} />
+                        </div>
+                    );
+                    case 'stream': return (
+                        <div>
+                            <Row label="Netflix" val={vpn.streamingServices.netflix ? "✓" : "✕"} />
+                            <Row label="Hulu" val={vpn.streamingServices.hulu ? "✓" : "✕"} />
+                            <Row label="BBC" val={vpn.streamingServices.bbc ? "✓" : "✕"} />
+                            <Row label="Disney+" val={vpn.streamingServices.disney ? "✓" : "✕"} />
+                        </div>
+                    );
+                    case 'tech': return (
+                        <div>
+                            <Row label="Kill Switch" val={vpn.features.killSwitch ? "✓" : "✕"} />
+                            <Row label="WireGuard" val={vpn.features.wireguard ? "✓" : "✕"} />
+                            <Row label="Port Forward" val={vpn.features.portForward ? "✓" : "✕"} />
+                            <Row label="Split Tunnel" val={vpn.features.splitTunnel ? "✓" : "✕"} />
+                        </div>
+                    );
                     default: return null;
                 }
             };
 
             return (
-                <div ref={cardRef} className={`tech-card ${highlighted ? 'highlight-card' : ''}`}>
+                <div ref={cardRef} className={`tech-card ${highlighted ? 'highlight-card' : ''}`} data-rank={vpn.rank}>
                     <div className="card-header">
-                        <div><span className="font-mono text-acid" style={{fontSize:'0.7rem'}}>#{vpn.rank} {vpn.bestFor}</span><h3 className="font-display" style={{fontSize:'1.5rem'}}>{vpn.name}</h3>{vpn.recentUpdate && <span className="update-badge">🔔 {vpn.recentUpdate}</span>}</div>
-                        <div className="score-box"><span className="score-val">{vpn.overallScore}</span></div>
+                        <div>
+                            <span className="font-mono text-acid" style={{fontSize:'0.7rem'}}>#{vpn.rank} {vpn.bestFor}</span>
+                            <h3 className="font-display" style={{fontSize:'1.5rem', marginTop:'4px'}}>{vpn.name}</h3>
+                            {vpn.recentUpdate && <span className="update-badge">🔔 {vpn.recentUpdate}</span>}
+                        </div>
+                        <div className="score-box">
+                            <span className="score-val" style={{fontSize:'1.5rem', fontFamily:'var(--font-mono)', fontWeight:'bold', color:'var(--accent-acid)'}}>{vpn.overallScore}</span>
+                        </div>
                     </div>
                     <div className="card-body">
-                        <div className="spec-grid"><div className="spec-item"><span className="spec-label">PRICE (2YR)</span><span className="spec-value">{vpn.price.twoYear}</span></div><div className="spec-item"><span className="spec-label">SPEED</span><span className="spec-value">{vpn.speeds.download} Mbps</span></div></div>
+                        <div className="spec-grid">
+                            <div className="spec-item">
+                                <span className="spec-label">PRICE (2YR)</span>
+                                <span className="spec-value">{vpn.price.twoYear}</span>
+                            </div>
+                            <div className="spec-item">
+                                <span className="spec-label">SPEED</span>
+                                <span className="spec-value">{vpn.speeds.download} Mbps</span>
+                            </div>
+                        </div>
                         {expanded && (<div style={{ marginTop: '20px', borderTop: '1px solid var(--border-dim)', paddingTop: '16px' }}><div className="card-tabs"><button className={`card-tab ${tab==='privacy'?'active':''}`} onClick={()=>setTab('privacy')}>🔒 PRIVACY</button><button className={`card-tab ${tab==='speed'?'active':''}`} onClick={()=>setTab('speed')}>⚡ SPEED</button><button className={`card-tab ${tab==='stream'?'active':''}`} onClick={()=>setTab('stream')}>📺 STREAM</button><button className={`card-tab ${tab==='tech'?'active':''}`} onClick={()=>setTab('tech')}>⚙️ TECH</button></div><div style={{ minHeight: '120px' }}>{renderTabContent()}</div></div>)}
                     </div>
                     <div className="card-footer">
-                        <a href={vpn.url} target="_blank" className="btn btn-primary" style={{flex:1, display:'flex', justifyContent:'center', alignItems:'center'}}>VISIT</a>
+                        <a href={vpn.url} target="_blank" rel="noopener noreferrer" className="btn btn-primary" style={{flex:1, textDecoration:'none'}}>VISIT</a>
                         <button className="btn btn-outline" style={{flex:1}} onClick={() => setExpanded(!expanded)}>{expanded ? 'CLOSE' : 'INTEL'}</button>
                         <button className="btn" style={{ background: isFav ? 'var(--accent-danger)' : 'var(--border-dim)', color: 'white' }} onClick={() => toggleFav(vpn.name)}>{isFav ? '♥' : '♡'}</button>
                     </div>
@@ -756,12 +966,20 @@
                         <h2 className="font-display">GLOBAL VELOCITY INDEX</h2>
                         <div className="speed-legend"><div className="legend-item"><div className="legend-color" style={{background:'var(--accent-acid)'}}></div> DOWNLOAD</div><div className="legend-item"><div className="legend-color" style={{background:'var(--accent-cyan)'}}></div> UPLOAD</div></div>
                      </div>
-                     <div className="tech-card" style={{ padding: '24px' }}>
+                     <div className="tech-card" style={{ padding: '28px' }}>
                         {sorted.map(v => (
                             <div key={v.name} className="speed-row">
                                 <div className="speed-label">{v.name}</div>
-                                <div className="speed-track"><div className="speed-bar-dl" style={{ width: `${(v.speeds.download / maxSpeed) * 100}%` }}>{v.speeds.download}</div><div className="speed-bar-ul" style={{ width: `${(v.speeds.upload / maxSpeed) * 100}%` }}></div></div>
-                                <div className="speed-meta"><div style={{color:'var(--text-primary)'}}>{v.speeds.latency}ms</div><div style={{fontSize:'0.65rem'}}>PING</div></div>
+                                <div className="speed-track">
+                                    <div className="speed-bar-dl" style={{ width: `${(v.speeds.download / maxSpeed) * 100}%` }}>
+                                        {v.speeds.download}
+                                    </div>
+                                    <div className="speed-bar-ul" style={{ width: `${(v.speeds.upload / maxSpeed) * 100}%` }}></div>
+                                </div>
+                                <div className="speed-meta">
+                                    <div style={{color:'var(--text-primary)'}}>{v.speeds.latency}ms</div>
+                                    <div style={{fontSize:'0.65rem'}}>PING</div>
+                                </div>
                             </div>
                         ))}
                      </div>
