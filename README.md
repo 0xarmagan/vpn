@@ -1,11 +1,17 @@
-📖 What Is This?
+VPN Compass is a Single Page Application (SPA) designed to disrupt the traditional, affiliate-heavy VPN review market. Instead of subjective blog posts, Compass offers a tactical decision matrix analyzing 26 top providers across 15 critical security parameters.
 
-VPN Compass is a comprehensive, interactive web application that helps users find the perfect VPN (Virtual Private Network) service for their specific needs. Unlike traditional comparison websites that are often biased by affiliate commissions, VPN Compass provides data-driven, transparent analysis of 26 leading VPN providers based on rigorous testing across 15 categories.Think of it as a personalized VPN advisor that combines the depth of a professional review site with the interactivity of a modern web app.
+It combines the depth of a technical audit with the interactivity of a modern React application, allowing users to visualize speed data, compare encryption standards, and filter by jurisdiction in real-time.
 
-✅ Advanced filtering - Find VPNs by price, speed, features, verification status
-✅ Visual speed analysis - See performance data in beautiful charts
-✅ Side-by-side comparison - Compare up to 4 VPNs simultaneously
-✅ Favorites system - Save and manage your shortlist
-✅ Transparent methodology - See exactly how we test and score
-✅ Mobile-first design - Works perfectly on any device
-✅ Dark/light modes - Choose your preferred viewing experience
+✨ Key Features
+
+⚡ Visual Velocity Index: Custom-built, CSS-based data visualization for download/upload performance.
+
+⚔️ Tactical Comparison Engine: Select up to 4 providers for a head-to-head technical deep dive.
+
+🎯 Decision Matrix: Interactive "Use Case" cards that map user needs (Gaming, Privacy, Streaming) to specific provider architectures.
+
+💾 Local State Management: A "Favorites" system that persists user selections via LocalStorage.
+
+📱 Responsive Cyber-UI: A mobile-first "Cyber-Industrial" design system featuring neon accents, glassmorphism, and fluid CSS animations.
+
+⚖️ Transparent Methodology: Clear breakdown of scoring algorithms for Privacy, Speed, and Security.
