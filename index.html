@@ -1075,8 +1075,6 @@
 
         // --- FAVORITES COMPARISON VIEW ---
         function FavoritesComparisonView({ vpns, onBack, favorites, toggleFav }) {
-            const [viewMode, setViewMode] = useState('cards'); // 'cards' or 'comparison'
-            
             if (vpns.length === 0) {
                 return (
                     <div className="animate-enter" style={{ maxWidth: '1440px', margin: '40px auto', padding: '0 24px', textAlign: 'center' }}>
@@ -1091,65 +1089,26 @@
             
             return (
                 <div className="animate-enter" style={{ maxWidth: '1440px', margin: '40px auto', padding: '0 24px' }}>
-                    {/* Header with View Toggle */}
+                    {/* Header */}
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
                             <button className="btn btn-outline" onClick={onBack} style={{ padding: '8px 16px' }}>← BACK</button>
-                            <h2 className="font-display" style={{ margin: 0 }}>MY FAVORITES ({vpns.length})</h2>
+                            <h2 className="font-display" style={{ margin: 0 }}>MY FAVORITES COMPARISON ({vpns.length})</h2>
                         </div>
-                        
-                        {/* View Mode Toggle */}
-                        {vpns.length >= 2 && (
-                            <div style={{ display: 'flex', gap: '8px', background: 'var(--bg-panel)', border: '1px solid var(--border-dim)', borderRadius: '2px', padding: '4px' }}>
-                                <button 
-                                    onClick={() => setViewMode('cards')}
-                                    style={{
-                                        background: viewMode === 'cards' ? 'var(--accent-acid)' : 'transparent',
-                                        color: viewMode === 'cards' ? 'var(--bg-deep)' : 'var(--text-secondary)',
-                                        border: 'none',
-                                        padding: '8px 16px',
-                                        cursor: 'pointer',
-                                        fontFamily: 'var(--font-mono)',
-                                        fontSize: '0.75rem',
-                                        fontWeight: '600',
-                                        letterSpacing: '0.05em',
-                                        transition: 'all 0.2s'
-                                    }}
-                                >
-                                    📋 CARDS
-                                </button>
-                                <button 
-                                    onClick={() => setViewMode('comparison')}
-                                    style={{
-                                        background: viewMode === 'comparison' ? 'var(--accent-acid)' : 'transparent',
-                                        color: viewMode === 'comparison' ? 'var(--bg-deep)' : 'var(--text-secondary)',
-                                        border: 'none',
-                                        padding: '8px 16px',
-                                        cursor: 'pointer',
-                                        fontFamily: 'var(--font-mono)',
-                                        fontSize: '0.75rem',
-                                        fontWeight: '600',
-                                        letterSpacing: '0.05em',
-                                        transition: 'all 0.2s'
-                                    }}
-                                >
-                                    ⚖️ COMPARE
-                                </button>
-                            </div>
-                        )}
                     </div>
                     
-                    {/* Cards View */}
-                    {viewMode === 'cards' && (
-                        <div className="layout-grid">
-                            {vpns.map(v => (
-                                <VPNCard key={v.name} vpn={v} isFav={true} toggleFav={toggleFav} />
-                            ))}
+                    {/* Single Favorite - Show Card */}
+                    {vpns.length === 1 && (
+                        <div>
+                            <div className="tech-card" style={{ padding: '24px', marginBottom: '20px', textAlign: 'center', background: 'var(--bg-surface)' }}>
+                                <p className="text-muted">⚖️ Add at least one more favorite to enable side-by-side comparison.</p>
+                            </div>
+                            <VPNCard vpn={vpns[0]} isFav={true} toggleFav={toggleFav} />
                         </div>
                     )}
                     
-                    {/* Detailed Comparison View */}
-                    {viewMode === 'comparison' && vpns.length >= 2 && (
+                    {/* Detailed Comparison View (2+ favorites) */}
+                    {vpns.length >= 2 && (
                         <div className="tech-card" style={{ padding: '0', overflow: 'auto' }}>
                             <table style={{ 
                                 width: '100%', 
@@ -1184,6 +1143,24 @@
                                                 <div className="font-display" style={{ fontSize: '1.1rem', marginBottom: '8px' }}>{v.name}</div>
                                                 <div className="text-acid font-mono" style={{ fontSize: '1.4rem', fontWeight: '700' }}>{v.overallScore}</div>
                                                 <div style={{ fontSize: '0.7rem', color: 'var(--text-tertiary)', marginTop: '4px' }}>RANK #{v.rank}</div>
+                                                <button 
+                                                    onClick={() => toggleFav(v.name)}
+                                                    style={{
+                                                        marginTop: '12px',
+                                                        background: 'var(--accent-danger)',
+                                                        border: 'none',
+                                                        color: 'white',
+                                                        padding: '6px 12px',
+                                                        borderRadius: '2px',
+                                                        cursor: 'pointer',
+                                                        fontSize: '0.7rem',
+                                                        fontFamily: 'var(--font-mono)',
+                                                        letterSpacing: '0.05em'
+                                                    }}
+                                                    title="Remove from favorites"
+                                                >
+                                                    ✗ REMOVE
+                                                </button>
                                             </th>
                                         ))}
                                     </tr>
@@ -1239,13 +1216,6 @@
                                     <ComparisonRow label="Platforms" vpns={vpns} getValue={(v) => v.platforms.join(', ')} />
                                 </tbody>
                             </table>
-                        </div>
-                    )}
-                    
-                    {/* Single Favorite Message */}
-                    {viewMode === 'comparison' && vpns.length === 1 && (
-                        <div className="tech-card" style={{ padding: '40px', textAlign: 'center' }}>
-                            <p className="text-muted">Add at least one more favorite to enable side-by-side comparison.</p>
                         </div>
                     )}
                 </div>
