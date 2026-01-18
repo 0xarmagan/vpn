@@ -665,16 +665,11 @@
 
                         {activeTab === 'speed' && <SpeedAnalysisView vpns={ALL_VPN_DATA} />}
                         {activeTab === 'favorites' && (
-                            <UseCaseLayer 
-                                category="favorites" 
-                                onBack={() => setActiveTab('dashboard')}
+                            <FavoritesComparisonView 
                                 vpns={ALL_VPN_DATA.filter(v => favorites.includes(v.name))}
-                                filters={filters}
-                                toggleFilter={toggleFilter}
+                                onBack={() => setActiveTab('dashboard')}
                                 favorites={favorites}
                                 toggleFav={toggleFav}
-                                searchQuery={searchQuery}
-                                setSearchQuery={setSearchQuery}
                             />
                         )}
                     </main>
@@ -1017,6 +1012,244 @@
                     </div>
                 </div>
             )
+        }
+
+        // --- FAVORITES COMPARISON VIEW ---
+        function FavoritesComparisonView({ vpns, onBack, favorites, toggleFav }) {
+            const [viewMode, setViewMode] = useState('cards'); // 'cards' or 'comparison'
+            
+            if (vpns.length === 0) {
+                return (
+                    <div className="animate-enter" style={{ maxWidth: '1440px', margin: '40px auto', padding: '0 24px', textAlign: 'center' }}>
+                        <div className="tech-card" style={{ padding: '60px 40px' }}>
+                            <h2 className="font-display" style={{ fontSize: '2rem', marginBottom: '20px' }}>NO FAVORITES SELECTED</h2>
+                            <p className="text-muted" style={{ marginBottom: '30px' }}>Click the ⭐ button on any VPN card to add it to your favorites.</p>
+                            <button className="btn btn-outline" onClick={onBack}>EXPLORE VPNs</button>
+                        </div>
+                    </div>
+                );
+            }
+            
+            return (
+                <div className="animate-enter" style={{ maxWidth: '1440px', margin: '40px auto', padding: '0 24px' }}>
+                    {/* Header with View Toggle */}
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                            <button className="btn btn-outline" onClick={onBack} style={{ padding: '8px 16px' }}>← BACK</button>
+                            <h2 className="font-display" style={{ margin: 0 }}>MY FAVORITES ({vpns.length})</h2>
+                        </div>
+                        
+                        {/* View Mode Toggle */}
+                        {vpns.length >= 2 && (
+                            <div style={{ display: 'flex', gap: '8px', background: 'var(--bg-panel)', border: '1px solid var(--border-dim)', borderRadius: '2px', padding: '4px' }}>
+                                <button 
+                                    onClick={() => setViewMode('cards')}
+                                    style={{
+                                        background: viewMode === 'cards' ? 'var(--accent-acid)' : 'transparent',
+                                        color: viewMode === 'cards' ? 'var(--bg-deep)' : 'var(--text-secondary)',
+                                        border: 'none',
+                                        padding: '8px 16px',
+                                        cursor: 'pointer',
+                                        fontFamily: 'var(--font-mono)',
+                                        fontSize: '0.75rem',
+                                        fontWeight: '600',
+                                        letterSpacing: '0.05em',
+                                        transition: 'all 0.2s'
+                                    }}
+                                >
+                                    📋 CARDS
+                                </button>
+                                <button 
+                                    onClick={() => setViewMode('comparison')}
+                                    style={{
+                                        background: viewMode === 'comparison' ? 'var(--accent-acid)' : 'transparent',
+                                        color: viewMode === 'comparison' ? 'var(--bg-deep)' : 'var(--text-secondary)',
+                                        border: 'none',
+                                        padding: '8px 16px',
+                                        cursor: 'pointer',
+                                        fontFamily: 'var(--font-mono)',
+                                        fontSize: '0.75rem',
+                                        fontWeight: '600',
+                                        letterSpacing: '0.05em',
+                                        transition: 'all 0.2s'
+                                    }}
+                                >
+                                    ⚖️ COMPARE
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                    
+                    {/* Cards View */}
+                    {viewMode === 'cards' && (
+                        <div className="layout-grid">
+                            {vpns.map(v => (
+                                <VpnCard key={v.name} vpn={v} isFav={true} toggleFav={toggleFav} />
+                            ))}
+                        </div>
+                    )}
+                    
+                    {/* Detailed Comparison View */}
+                    {viewMode === 'comparison' && vpns.length >= 2 && (
+                        <div className="tech-card" style={{ padding: '0', overflow: 'auto' }}>
+                            <table style={{ 
+                                width: '100%', 
+                                borderCollapse: 'collapse',
+                                fontSize: '0.85rem',
+                                fontFamily: 'var(--font-body)'
+                            }}>
+                                <thead>
+                                    <tr style={{ background: 'var(--bg-surface)', borderBottom: '2px solid var(--accent-acid)' }}>
+                                        <th style={{ 
+                                            padding: '20px 24px', 
+                                            textAlign: 'left',
+                                            fontFamily: 'var(--font-display)',
+                                            fontSize: '0.9rem',
+                                            letterSpacing: '0.1em',
+                                            color: 'var(--text-secondary)',
+                                            position: 'sticky',
+                                            left: 0,
+                                            background: 'var(--bg-surface)',
+                                            zIndex: 10,
+                                            minWidth: '200px'
+                                        }}>
+                                            SPECIFICATION
+                                        </th>
+                                        {vpns.map(v => (
+                                            <th key={v.name} style={{ 
+                                                padding: '20px 24px', 
+                                                textAlign: 'center',
+                                                minWidth: '180px',
+                                                background: 'var(--bg-surface)'
+                                            }}>
+                                                <div className="font-display" style={{ fontSize: '1.1rem', marginBottom: '8px' }}>{v.name}</div>
+                                                <div className="text-acid font-mono" style={{ fontSize: '1.4rem', fontWeight: '700' }}>{v.overallScore}</div>
+                                                <div style={{ fontSize: '0.7rem', color: 'var(--text-tertiary)', marginTop: '4px' }}>RANK #{v.rank}</div>
+                                            </th>
+                                        ))}
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {/* Pricing Section */}
+                                    <ComparisonRow label="💰 PRICING" isSectionHeader />
+                                    <ComparisonRow label="Monthly" vpns={vpns} getValue={(v) => v.price.monthly} />
+                                    <ComparisonRow label="Annual" vpns={vpns} getValue={(v) => v.price.annual} />
+                                    <ComparisonRow label="2-Year Plan" vpns={vpns} getValue={(v) => v.price.twoYear} highlight />
+                                    <ComparisonRow label="Money-Back" vpns={vpns} getValue={(v) => v.moneyBack} />
+                                    
+                                    {/* Performance Section */}
+                                    <ComparisonRow label="⚡ PERFORMANCE" isSectionHeader />
+                                    <ComparisonRow label="Download Speed" vpns={vpns} getValue={(v) => `${v.speeds.download} Mbps`} highlight />
+                                    <ComparisonRow label="Upload Speed" vpns={vpns} getValue={(v) => `${v.speeds.upload} Mbps`} />
+                                    <ComparisonRow label="Latency" vpns={vpns} getValue={(v) => `${v.speeds.latency}ms`} />
+                                    <ComparisonRow label="Packet Loss" vpns={vpns} getValue={(v) => `${v.speeds.loss}%`} />
+                                    
+                                    {/* Privacy Section */}
+                                    <ComparisonRow label="🔒 PRIVACY & SECURITY" isSectionHeader />
+                                    <ComparisonRow label="No-Logs Policy" vpns={vpns} getValue={(v) => v.noLogs} highlight />
+                                    <ComparisonRow label="Jurisdiction" vpns={vpns} getValue={(v) => v.jurisdiction} />
+                                    <ComparisonRow label="Audit" vpns={vpns} getValue={(v) => v.audit} />
+                                    <ComparisonRow label="Encryption" vpns={vpns} getValue={(v) => v.encryption} />
+                                    <ComparisonRow label="Protocols" vpns={vpns} getValue={(v) => v.protocols.join(', ')} />
+                                    
+                                    {/* Features Section */}
+                                    <ComparisonRow label="🛡️ FEATURES" isSectionHeader />
+                                    <ComparisonRow label="Kill Switch" vpns={vpns} getValue={(v) => v.features.killSwitch ? '✓' : '✗'} isBoolean />
+                                    <ComparisonRow label="Split Tunnel" vpns={vpns} getValue={(v) => v.features.splitTunnel ? '✓' : '✗'} isBoolean />
+                                    <ComparisonRow label="Ad Blocker" vpns={vpns} getValue={(v) => v.features.adBlock ? '✓' : '✗'} isBoolean />
+                                    <ComparisonRow label="Port Forwarding" vpns={vpns} getValue={(v) => v.features.portForward ? '✓' : '✗'} isBoolean />
+                                    <ComparisonRow label="WireGuard" vpns={vpns} getValue={(v) => v.features.wireguard ? '✓' : '✗'} isBoolean />
+                                    
+                                    {/* Network Section */}
+                                    <ComparisonRow label="🌍 NETWORK" isSectionHeader />
+                                    <ComparisonRow label="Total Servers" vpns={vpns} getValue={(v) => v.servers} />
+                                    <ComparisonRow label="Countries" vpns={vpns} getValue={(v) => v.countries} highlight />
+                                    <ComparisonRow label="Max Devices" vpns={vpns} getValue={(v) => v.devices} />
+                                    
+                                    {/* Streaming Section */}
+                                    <ComparisonRow label="📺 STREAMING" isSectionHeader />
+                                    <ComparisonRow label="Overall Rating" vpns={vpns} getValue={(v) => v.streaming} />
+                                    <ComparisonRow label="Netflix" vpns={vpns} getValue={(v) => v.streamingServices.netflix ? '✓' : '✗'} isBoolean />
+                                    <ComparisonRow label="Disney+" vpns={vpns} getValue={(v) => v.streamingServices.disney ? '✓' : '✗'} isBoolean />
+                                    <ComparisonRow label="BBC iPlayer" vpns={vpns} getValue={(v) => v.streamingServices.bbc ? '✓' : '✗'} isBoolean />
+                                    <ComparisonRow label="Hulu" vpns={vpns} getValue={(v) => v.streamingServices.hulu ? '✓' : '✗'} isBoolean />
+                                    
+                                    {/* Support Section */}
+                                    <ComparisonRow label="💬 SUPPORT" isSectionHeader />
+                                    <ComparisonRow label="Support Score" vpns={vpns} getValue={(v) => `${v.support}/10`} />
+                                    <ComparisonRow label="Platforms" vpns={vpns} getValue={(v) => v.platforms.join(', ')} />
+                                </tbody>
+                            </table>
+                        </div>
+                    )}
+                    
+                    {/* Single Favorite Message */}
+                    {viewMode === 'comparison' && vpns.length === 1 && (
+                        <div className="tech-card" style={{ padding: '40px', textAlign: 'center' }}>
+                            <p className="text-muted">Add at least one more favorite to enable side-by-side comparison.</p>
+                        </div>
+                    )}
+                </div>
+            );
+        }
+        
+        // Helper component for comparison table rows
+        function ComparisonRow({ label, vpns, getValue, isSectionHeader, highlight, isBoolean }) {
+            if (isSectionHeader) {
+                return (
+                    <tr style={{ background: 'var(--bg-deep)' }}>
+                        <td colSpan={100} style={{ 
+                            padding: '16px 24px', 
+                            fontFamily: 'var(--font-display)',
+                            fontSize: '0.85rem',
+                            letterSpacing: '0.1em',
+                            color: 'var(--accent-cyan)',
+                            borderTop: '1px solid var(--border-bright)',
+                            borderBottom: '1px solid var(--border-dim)'
+                        }}>
+                            {label}
+                        </td>
+                    </tr>
+                );
+            }
+            
+            return (
+                <tr style={{ 
+                    borderBottom: '1px solid var(--border-dim)',
+                    background: highlight ? 'rgba(204, 255, 0, 0.02)' : 'transparent'
+                }}>
+                    <td style={{ 
+                        padding: '16px 24px',
+                        fontWeight: '500',
+                        color: highlight ? 'var(--text-primary)' : 'var(--text-secondary)',
+                        position: 'sticky',
+                        left: 0,
+                        background: highlight ? 'rgba(204, 255, 0, 0.02)' : 'var(--bg-panel)',
+                        zIndex: 9,
+                        borderRight: '1px solid var(--border-dim)'
+                    }}>
+                        {label}
+                    </td>
+                    {vpns.map(v => {
+                        const value = getValue(v);
+                        const isCheckmark = value === '✓';
+                        const isCross = value === '✗';
+                        
+                        return (
+                            <td key={v.name} style={{ 
+                                padding: '16px 24px',
+                                textAlign: 'center',
+                                fontFamily: isBoolean ? 'var(--font-mono)' : 'inherit',
+                                color: isCheckmark ? 'var(--accent-win)' : isCross ? 'var(--text-tertiary)' : 'var(--text-primary)',
+                                fontWeight: highlight ? '600' : '400',
+                                fontSize: isBoolean ? '1.2rem' : '0.85rem'
+                            }}>
+                                {value}
+                            </td>
+                        );
+                    })}
+                </tr>
+            );
         }
 
         // --- HEADER ---
