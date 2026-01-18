@@ -1014,6 +1014,65 @@
             )
         }
 
+        // --- HELPER: COMPARISON TABLE ROW ---
+        function ComparisonRow({ label, vpns, getValue, isSectionHeader, highlight, isBoolean }) {
+            if (isSectionHeader) {
+                return (
+                    <tr style={{ background: 'var(--bg-deep)' }}>
+                        <td colSpan={100} style={{ 
+                            padding: '16px 24px', 
+                            fontFamily: 'var(--font-display)',
+                            fontSize: '0.85rem',
+                            letterSpacing: '0.1em',
+                            color: 'var(--accent-cyan)',
+                            borderTop: '1px solid var(--border-bright)',
+                            borderBottom: '1px solid var(--border-dim)'
+                        }}>
+                            {label}
+                        </td>
+                    </tr>
+                );
+            }
+            
+            return (
+                <tr style={{ 
+                    borderBottom: '1px solid var(--border-dim)',
+                    background: highlight ? 'rgba(204, 255, 0, 0.02)' : 'transparent'
+                }}>
+                    <td style={{ 
+                        padding: '16px 24px',
+                        fontWeight: '500',
+                        color: highlight ? 'var(--text-primary)' : 'var(--text-secondary)',
+                        position: 'sticky',
+                        left: 0,
+                        background: highlight ? 'rgba(204, 255, 0, 0.02)' : 'var(--bg-panel)',
+                        zIndex: 9,
+                        borderRight: '1px solid var(--border-dim)'
+                    }}>
+                        {label}
+                    </td>
+                    {vpns.map(v => {
+                        const value = getValue(v);
+                        const isCheckmark = value === '✓';
+                        const isCross = value === '✗';
+                        
+                        return (
+                            <td key={v.name} style={{ 
+                                padding: '16px 24px',
+                                textAlign: 'center',
+                                fontFamily: isBoolean ? 'var(--font-mono)' : 'inherit',
+                                color: isCheckmark ? 'var(--accent-win)' : isCross ? 'var(--text-tertiary)' : 'var(--text-primary)',
+                                fontWeight: highlight ? '600' : '400',
+                                fontSize: isBoolean ? '1.2rem' : '0.85rem'
+                            }}>
+                                {value}
+                            </td>
+                        );
+                    })}
+                </tr>
+            );
+        }
+
         // --- FAVORITES COMPARISON VIEW ---
         function FavoritesComparisonView({ vpns, onBack, favorites, toggleFav }) {
             const [viewMode, setViewMode] = useState('cards'); // 'cards' or 'comparison'
@@ -1084,7 +1143,7 @@
                     {viewMode === 'cards' && (
                         <div className="layout-grid">
                             {vpns.map(v => (
-                                <VpnCard key={v.name} vpn={v} isFav={true} toggleFav={toggleFav} />
+                                <VPNCard key={v.name} vpn={v} isFav={true} toggleFav={toggleFav} />
                             ))}
                         </div>
                     )}
@@ -1190,65 +1249,6 @@
                         </div>
                     )}
                 </div>
-            );
-        }
-        
-        // Helper component for comparison table rows
-        function ComparisonRow({ label, vpns, getValue, isSectionHeader, highlight, isBoolean }) {
-            if (isSectionHeader) {
-                return (
-                    <tr style={{ background: 'var(--bg-deep)' }}>
-                        <td colSpan={100} style={{ 
-                            padding: '16px 24px', 
-                            fontFamily: 'var(--font-display)',
-                            fontSize: '0.85rem',
-                            letterSpacing: '0.1em',
-                            color: 'var(--accent-cyan)',
-                            borderTop: '1px solid var(--border-bright)',
-                            borderBottom: '1px solid var(--border-dim)'
-                        }}>
-                            {label}
-                        </td>
-                    </tr>
-                );
-            }
-            
-            return (
-                <tr style={{ 
-                    borderBottom: '1px solid var(--border-dim)',
-                    background: highlight ? 'rgba(204, 255, 0, 0.02)' : 'transparent'
-                }}>
-                    <td style={{ 
-                        padding: '16px 24px',
-                        fontWeight: '500',
-                        color: highlight ? 'var(--text-primary)' : 'var(--text-secondary)',
-                        position: 'sticky',
-                        left: 0,
-                        background: highlight ? 'rgba(204, 255, 0, 0.02)' : 'var(--bg-panel)',
-                        zIndex: 9,
-                        borderRight: '1px solid var(--border-dim)'
-                    }}>
-                        {label}
-                    </td>
-                    {vpns.map(v => {
-                        const value = getValue(v);
-                        const isCheckmark = value === '✓';
-                        const isCross = value === '✗';
-                        
-                        return (
-                            <td key={v.name} style={{ 
-                                padding: '16px 24px',
-                                textAlign: 'center',
-                                fontFamily: isBoolean ? 'var(--font-mono)' : 'inherit',
-                                color: isCheckmark ? 'var(--accent-win)' : isCross ? 'var(--text-tertiary)' : 'var(--text-primary)',
-                                fontWeight: highlight ? '600' : '400',
-                                fontSize: isBoolean ? '1.2rem' : '0.85rem'
-                            }}>
-                                {value}
-                            </td>
-                        );
-                    })}
-                </tr>
             );
         }
 
