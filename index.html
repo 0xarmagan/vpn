@@ -674,8 +674,8 @@
                         )}
                     </main>
 
-                    {favorites.length > 1 && activeTab !== 'compare' && (
-                        <button className="compare-fab" onClick={() => setActiveTab('compare')}>
+                    {favorites.length > 1 && activeTab !== 'favorites' && (
+                        <button className="compare-fab" onClick={() => setActiveTab('favorites')}>
                             COMPARE ({favorites.length})
                         </button>
                     )}
@@ -1093,7 +1093,7 @@
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
                             <button className="btn btn-outline" onClick={onBack} style={{ padding: '8px 16px' }}>← BACK</button>
-                            <h2 className="font-display" style={{ margin: 0 }}>MY FAVORITES COMPARISON ({vpns.length})</h2>
+                            <h2 className="font-display" style={{ margin: 0 }}>COMPARISON ({vpns.length})</h2>
                         </div>
                     </div>
                     
@@ -1236,11 +1236,18 @@
 
         // --- NAV ---
         function NavBar({ activeTab, onNav }) {
+            const tabLabels = {
+                dashboard: 'MAIN PAGE',
+                grid: 'DASHBOARD',
+                speed: 'SPEED',
+                favorites: 'COMPARISON'
+            };
+            
             return (
                 <div style={{ borderBottom: '1px solid var(--border-dim)', background: 'var(--bg-deep)', position: 'sticky', top: '73px', zIndex: 90 }}>
                     <div style={{ maxWidth: '1440px', margin: '0 auto', display: 'flex', justifyContent: 'center', gap: '10px', padding: '12px 24px', overflowX: 'auto' }}>
                         {['dashboard', 'grid', 'speed', 'favorites'].map(tab => (
-                            <button key={tab} className={`btn ${activeTab === tab ? 'btn-primary' : 'btn-outline'}`} onClick={() => onNav(tab)} style={{fontSize: '0.8rem'}}>{tab.toUpperCase()}</button>
+                            <button key={tab} className={`btn ${activeTab === tab ? 'btn-primary' : 'btn-outline'}`} onClick={() => onNav(tab)} style={{fontSize: '0.8rem'}}>{tabLabels[tab]}</button>
                         ))}
                     </div>
                 </div>
